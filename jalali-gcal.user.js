@@ -4,7 +4,7 @@
 // @description		Adds Jalali calendar to Google Calendar web interface
 // @include		http://*.google.com/calendar/render*
 // @include		https://*.google.com/calendar/render*
-// @version		2.3
+// @version		{VERSION}
 // ==/UserScript==
 
 /*
@@ -33,20 +33,25 @@
 
 /* Changes:
  *
+ * 2008-09-19: Version 2.4.
+ *	* Support writing month name on the first day of each month in the
+ *	calendar table
+ *	--Behnam "ZWNJ" Esfahbod
+ *
  * 2008-09-19: Version 2.3.
- *	Some more fixes.
+ *	* Some more fixes.
  *	--Behnam "ZWNJ" Esfahbod
  *
  * 2008-09-19: Version 2.2.
- *	Support English and Persian numbers and months names.
+ *	* Support English and Persian numbers and months names.
  *	--Behnam "ZWNJ" Esfahbod
  *
  * 2008-08-29: Version 2.0.
- *	Make compatible with new Google Calendar UI.
+ *	* Make compatible with new Google Calendar UI.
  *	--Mehdi Ahmadizadeh
  *
  * 2007-01-03: Version 1.2.
- *	Fix a date format.
+ *	* Fix a date format.
  *	--Behnam "ZWNJ" Esfahbod
  *
  * 2006-06-01: Version 1.1.
@@ -65,9 +70,20 @@ var main = function ()
 // JalaliGCal Object //////////////////////////////////////////////////////////
 var JalaliGCal = function ()
 {
+    this.EDITION	= '{EDITION}';
+    this.VERSION	= '{VERSION}'
+
     // Preferences
-    this.usePersianDigits	= false;
-    this.usePersianNames	= false;
+    if (this.EDITION == 'Persian') {
+	this.usePersianDigits	= true;
+	this.usePersianNames	= true;
+    }
+    else {
+	this.usePersianDigits	= false;
+	this.usePersianNames	= false;
+    }
+
+    this.useMonthNameInFirstDay	= true;
 
     if (this.usePersianDigits) {
 	this.tagOpen		= '<span style="direction: rtl; unicode-bidi: embed; font-family: \'DejaVu Sans\',Tahoma,sans; font-weight: bold; font-size: 120%;">'
@@ -81,6 +97,7 @@ var JalaliGCal = function ()
 
     //this.splitter	= ' &#x2014; '
     this.splitter	= ' &mdash; '
+
 
     // Init values
     this.jc = new JalaliCalendar();
@@ -105,11 +122,15 @@ var JalaliGCal = function ()
 
     // Day
     this.printJalaliDay				= function (j1)		{ return this.pN(j1[2])	; }
+    this.printJalaliDayOrMonth			= function (j1)		{ if (j1[2] != 1)
+									  return this.pN(j1[2])	;
+									else
+									  return this.pJMNA(j1[1])	;
+									}
 
     // Day & Month
     this.printJalaliMonumDay			= function (j1)		{ return this.pN(j1[1]) +	'/' +	this.pN(j1[2])	; }
 
-    this.printJalaliDayMonth			= function (j1)		{  }
     this.printJalaliMonthDay			= function (j1)		{ if (this.usePersianNames)
 									  return this.pN(j1[2]) +	' ' +	this.pJMNA(j1[1])	;
 									else
@@ -175,8 +196,10 @@ var JalaliGCal = function ()
 
 	// cheadX
 	else if (this.type == 6) { output += this.g1[3] + ' ' + this.g1[2] + this.splitter + this.tagOpen + this.printJalaliDay(j1) + this.tagClose; }
+
 	// dhX
-	else if (this.type == 7) { output += this.g1[2] + this.splitter + this.tagOpen + this.printJalaliDay(j1) + this.tagClose; }
+	else if (this.type == 7) { output += this.g1[2] + this.splitter + this.tagOpen + this.printJalaliDayOrMonth(j1) + this.tagClose; }
+
 	// lv_listview
 	else if (this.type == 8) { output += gs + this.splitter + this.tagOpen + this.printJalaliMonthDay(j1) + this.tagClose; }
 	else if (this.type == 9) { output += gs + this.splitter + this.tagOpen + this.printJalaliMonthDayYear(j1) + this.tagClose; }
@@ -189,15 +212,28 @@ var JalaliGCal = function ()
     this.getDaysFromGregorianString	= function (gs) {
 	var j1 = [1300, 1, 1], j2 = [1301, 1, 1], withDay = true;
 	//GM_log ("PARSER: Recognized (1) type: " + this.type);
+
+	// Types
+
+	// dateunderlay
 	var type1 = /([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})\s+[\-–]\s+([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH1 DAY1, YEAR1 - MONTH2 DAY2, YEAR2
 	var type2 = /([A-Z][a-z]{2})\s+(\d{1,2})\s+[\-–]\s+([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH1 DAY1 - MONTH2 DAY2, YEAR
 	var type3 = /([A-Z][a-z]{2})\s+(\d{1,2})\s+[\-–]\s+(\d{1,2})\s+(\d{4})/; // MONTH DAY1 - DAY2 YEAR
 	var type4 = /([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH DAY, YEAR
 	var type5 = /([A-Z][a-z]{2,})\s+(\d{4})/; // FULLMONTH YEAR
+
+	// cheadX
 	var type6 = /([A-Z][a-z]{2})\s+(\d{1,2})\/(\d{1,2})/; // WEEKDAY MONTHNUM/DAY
+
+	// dhX
 	var type7 = /(\d{1,2})/; // DAY
+
+	// lv_listview
 	var type8 = /([A-Z][a-z]{2})\s+(\d{1,2})/; // MONTH DAY
 	var type9 = /([A-Z][a-z]{2})\s+(\d{1,2})\s+(\d{4})/; // MONTH DAY YEAR
+
+
+	// Matching
 
 	// dateunderlay
 	if (1 <= this.type && this.type <= 5) {
