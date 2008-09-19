@@ -1,9 +1,10 @@
 // ==UserScript==
 // @name           Jalali GCal
-// @namespace      http://zwnj.org/proj
-// @description    Adds Jalali calendar to the web interface of Google Calendar
-// @include        *.google.com/calendar/render*
-// @version        1.2
+// @namespace      http://code.google.com/p/jalali-gcal
+// @description    Adds Jalali calendar to Google Calendar web interface
+// @include        http://*.google.com/calendar/render*
+// @include        https://*.google.com/calendar/render*
+// @version        2.2
 // ==/UserScript==
 
 /*
@@ -11,7 +12,7 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -22,7 +23,26 @@
  */
 
 /*
- * Copyright (C) 2006  Behnam "ZWNJ" Esfahbod <behnam@zwnj.org>
+ * Copyright (C) 2006, 2007, 2008  Behnam "ZWNJ" Esfahbod <behnam@zwnj.org>
+ * Copyright (C) 2008  Mehdi Ahmadizadeh <mehdia@buffalo.edu>
+ */
+
+/* Changes:
+ *
+ * 2008-09-19: Version 2.2.
+ *     --Behnam "ZWNJ" Esfahbod
+ *
+ * 2008-08-29: Version 2.0.
+ *     Make compatible with new Google Calendar UI.
+ *     --Mehdi Ahmadizadeh
+ *
+ * 2007-01-03: Version 1.2.
+ *     Fix a date format.
+ *     --Behnam "ZWNJ" Esfahbod
+ *
+ * 2006-06-01: Version 1.1.
+ *     --Behnam "ZWNJ" Esfahbod
+ *
  */
 
 // Main Program ///////////////////////////////////////////////////////////////
@@ -36,55 +56,119 @@ var main = function ()
 // JalaliGCal Object //////////////////////////////////////////////////////////
 var JalaliGCal = function ()
 {
+    // Preferences
+    this.usePersianDigits	= false;
+    this.usePersianNames	= false;
+
+    if (this.usePersianDigits) {
+	this.printTagOpen		= '<span style="font-family: \'DejaVu Sans\',Tahoma,sans;">'
+	this.printTagClose		= '</span>'
+    }
+
+    else {
+	this.printTagOpen		= '<i>'
+	this.printTagClose		= '</i>'
+    }
+
+
+    // Init values
     this.jc = new JalaliCalendar();
     this.g1 = [];
     this.g2 = [];
 
-    this.printJalaliMonthName		= function (i)	{ return ["Far","Ord","Kho", "Tir","Mor","Sha", "Meh","Aba","Aza", "Dey","Bah","Esf"][i-1]; }
-    this.printJalaliMonthNameFull	= function (i)	{ return ["Farvardin","Ordibehesht","Khordad", "Tir","Mordad","Shahrivar", "Mehr","Aban","Azar", "Dey","Bahman","Esfand"][i-1]; }
+    // Persian number support
+    this.printPerisanDigit		= function (i)	{ return ["&#1632;", "&#1633;", "&#1634;", "&#1635;", "&#1636;", "&#1637;", "&#1638;", "&#1639;", "&#1640;", "&#1641;"][i]; }
+    this.printPersianNumber		= function (n)	{ var s = ''; for (var ch in String(n)) s += this.printPerisanDigit(parseInt(ch)); return s; }
+    this.pN	= this.printNumber	= function (n)	{ if (this.usePersianDigits) { return this.printPersianNumber(n); } else { return String(n); } }
 
-    this.printJalaliDay				= function (j1)		{ return 						j1[2]													; }
-    this.printJalaliMonthDay			= function (j1)		{ return this.printJalaliMonthName(j1[1]) +	' ' +	j1[2]													; }
-    this.printJalaliMonthYear			= function (j1)		{ return this.printJalaliMonthNameFull(j1[1]) +	' ' +			j1[0]											; }
-    this.printJalaliMonthMonthYear		= function (j1, j2)	{ return this.printJalaliMonthNameFull(j1[1]) +					' - ' +	this.printJalaliMonthNameFull(j2[1]) +	' ' +			j2[0]	; }
-    this.printJalaliMonthYearMonthYear		= function (j1, j2)	{ return this.printJalaliMonthNameFull(j1[1]) +	' ' +			j1[0] +	' - ' +	this.printJalaliMonthNameFull(j2[1]) +	' ' +			j2[0]	; }
-    this.printJalaliMonthDayYear		= function (j1)		{ return this.printJalaliMonthName(j1[1]) +	' ' +	j1[2] +	', ' +	j1[0]											; }
-    this.printJalaliMonthDayYear2		= function (j1)		{ return this.printJalaliMonthName(j1[1]) +	' ' +	j1[2] +	' ' +	j1[0]											; }
-    this.printJalaliMonthDayDayYear		= function (j1, j2)	{ return this.printJalaliMonthName(j1[1]) +	' ' +	j1[2] +			' - ' +							j2[2] +	' ' +	j2[0]	; }
-    this.printJalaliMonthDayMonthDayYear	= function (j1, j2)	{ return this.printJalaliMonthName(j1[1]) +	' ' +	j1[2] +			' - ' +	this.printJalaliMonthName(j2[1]) +	' ' +	j2[2] +	', ' +	j2[0]	; }
-    this.printJalaliMonthDayYearMonthDayYear	= function (j1, j2)	{ return this.printJalaliMonthName(j1[1]) +	' ' +	j1[2] +	', ' +	j1[0] +	' - ' +	this.printJalaliMonthName(j2[1]) +	' ' +	j2[2] +	', ' +	j2[0]	; }
+    // Jalali string outputs
+    this.jalaliMonthNameEnglishFull	= ["Farvardin","Ordibehesht","Khordad", "Tir","Mordad","Shahrivar", "Mehr","Aban","Azar", "Dey","Bahman","Esfand"];
+    this.jalaliMonthNameEnglishAbbr	= ["Far","Ord","Kho", "Tir","Mor","Sha", "Meh","Aba","Aza", "Dey","Bah","Esf"];
+
+    this.jalaliMonthNamePersianFull	= ["فروردین","اردی‌بهشت","خرداد", "تیر","مرداد","شهریور", "مهر","آبان","آذر", "دی","بهمن","اسفند"];
+    this.jalaliMonthNamePersianAbbr	= ["فرو.","ارد.","خرد.", "تیر.","مرد.","شهر.", "مهر.","آبا.","آذر.", "دی","بهم.","اسف."];
+    //this.jalaliMonthNamePersianAbbr		= ["فروردین","اردی‌بهشت","خرداد", "تیر","مرداد","شهریور", "مهر","آبان","آذر", "دی","بهمن","اسفند"];
+
+    this.pJMNA	= this.printJalaliMonthNameAbbr	= function (i)	{ if (this.usePersianNames) { return this.jalaliMonthNamePersianAbbr[i-1]; } else { return this.jalaliMonthNameEnglishAbbr[i-1]; } }
+    this.pJMNF	= this.printJalaliMonthNameFull	= function (i)	{ if (this.usePersianNames) { return this.jalaliMonthNamePersianFull[i-1]; } else { return this.jalaliMonthNameEnglishFull[i-1]; } }
+
+    // Day
+    this.printJalaliDay				= function (j1)		{ return this.pN(j1[2])	; }
+
+    // Day & Month
+    this.printJalaliMonumDay			= function (j1)		{ return this.pN(j1[1]) +	'/' +	this.pN(j1[2])	; }
+
+    this.printJalaliDayMonth			= function (j1)		{  }
+    this.printJalaliMonthDay			= function (j1)		{ if (this.usePersianNames)
+									  return this.pN(j1[2]) +	' ' +	this.pJMNA(j1[1])	;
+									else
+									  return this.pJMNA(j1[1]) +	' ' +	this.pN(j1[2])	;
+									}
+
+    // Month & Year
+    this.printJalaliMonthYear			= function (j1)		{ return this.pJMNF(j1[1]) +	' ' +	this.pN(j1[0])	; }
+
+    this.printJalaliMonthDayYear		= function (j1)		{ if (this.usePersianNames)
+									  return this.pN(j1[2]) +	' ' +	this.pJMNA(j1[1]) +	' ' +	this.pN(j1[0])	;
+									else
+									  return this.pJMNA(j1[1]) +	' ' +	this.pN(j1[2]) +	', ' +	this.pN(j1[0])	;
+									}
+
+    // Month & Year (2)
+    this.printJalaliMonthMonthYear		= function (j1, j2)	{ return this.pJMNF(j1[1]) +	' - ' +	this.pJMNF(j2[1]) +	' ' +	this.pN(j2[0])	; }
+    this.printJalaliMonthYearMonthYear		= function (j1, j2)	{ return this.pJMNF(j1[1]) +	' ' +	this.pN(j1[0]) +	' - ' +	this.pJMNF(j2[1]) +	' ' +	this.pN(j2[0])	; }
+
+    this.printJalaliMonthDayDayYear		= function (j1, j2)	{ if (this.usePersianNames)
+									  return this.pN(j1[2]) +	' - ' +	this.pN(j2[2]) +	' ' +	this.pJMNA(j1[1]) +	' ' +	this.pN(j2[0])	;
+									else
+									  return this.pJMNA(j1[1]) +	' ' +	this.pN(j1[2]) +	' - ' +	this.pN(j2[2]) +	', ' +	this.pN(j2[0])	;
+									}
+
+    // Day & Month & Year (2)
+    this.printJalaliMonthDayMonthDayYear	= function (j1, j2)	{ if (this.usePersianNames)
+									  return this.pN(j1[2]) +	' ' +	this.pJMNA(j1[1]) +	' - ' +	this.pN(j2[2]) +	' ' +	this.pJMNA(j2[1]) +	' ' +	this.pN(j2[0])	;
+									else
+									  return this.pJMNA(j1[1]) +	' ' +	this.pN(j1[2]) +	' - ' +	this.pJMNA(j2[1]) +	' ' +	this.pN(j2[2]) +	', ' +	this.pN(j2[0])	;
+									}
+
+    this.printJalaliMonthDayYearMonthDayYear	= function (j1, j2)	{ if (this.usePersianNames)
+									  return this.pN(j1[2]) +	' ' +	this.pJMNA(j1[1]) +	' ' +	this.pN(j1[0]) +	' - ' +	this.pN(j2[2]) +	' ' +	this.pJMNA(j2[1]) +	' ' +	this.pN(j2[0])	;
+									else
+									  return this.pJMNA(j1[1]) +	' ' +	this.pN(j1[2]) +	', ' +	this.pN(j1[0]) +	' - ' +	this.pJMNA(j2[1]) +	' ' +	this.pN(j2[2]) +	', ' +	this.pN(j2[0])	;
+									}
+
 
     this.printJalali	= function (days, gs)
     {
 	if (!days) { return gs; }
-	var j1 = days[0], j2 = days[1], withDay = days[2], output = ''; 
+	var j1 = days[0], j2 = days[1], withDay = days[2], output = '';
 	// general
 	if (1 <= this.type && this.type <= 5) {
-	    output += gs + ' &#x2014; <i>';
-	    if (j1[0] == j2[0]) {	if (j1[1] == j2[1]) {	if (j1[2] == j2[2]) {	if (withDay)	output += this.printJalaliMonthDayYear(j1,j2);
-											else		output += this.printJalaliMonthYear(j1,j2);
+	    output += gs + ' &#x2014; ' + this.printTagOpen;
+	    if (j1[0] == j2[0]) {	if (j1[1] == j2[1]) {	if (j1[2] == j2[2]) {	if (withDay)	output += this.printJalaliMonthDayYear(j1);
+											else		output += this.printJalaliMonthYear(j1);
 							    }
 							    else {  if (withDay)	output += this.printJalaliMonthDayDayYear(j1,j2);
-								    else		output += this.printJalaliMonthYear(j1,j2);
+								    else		output += this.printJalaliMonthYear(j1);
 							    }
 					}
 					else {	if (withDay)	output += this.printJalaliMonthDayMonthDayYear(j1,j2);
 						else		output += this.printJalaliMonthMonthYear(j1,j2);
 					}
-	    } 
+	    }
 	    else {	if (withDay)	output += this.printJalaliMonthDayYearMonthDayYear(j1,j2);
 			else		output += this.printJalaliMonthYearMonthYear(j1,j2);
 	    }
-	    output += '</i>';
+	    output += this.printTagClose;
 	}
 
 	// cheadX
-	else if (this.type == 6) { output += this.g1[3] + ' ' + this.g1[2] + ' &#x2014; <i>' + this.printJalaliDay(j1) + '</i>'; }
+	else if (this.type == 6) { output += this.g1[3] + ' ' + this.g1[2] + ' &#x2014; ' + this.printTagOpen + this.printJalaliDay(j1) + this.printTagClose; }
 	// dhX
-	else if (this.type == 7) { output += this.g1[2] + ' &#x2014; <i>' + this.printJalaliDay(j1) + '</i>'; }
+	else if (this.type == 7) { output += this.g1[2] + ' &#x2014; ' + this.printTagOpen + this.printJalaliDay(j1) + this.printTagClose; }
 	// lv_listview
-	else if (this.type == 8) { output += gs + ' &#x2014; <i>' + this.printJalaliMonthDay(j1) + '</i>'; }
-	else if (this.type == 9) { output += gs + ' &#x2014; <i>' + this.printJalaliMonthDayYear2(j1) + '</i>'; }
+	else if (this.type == 8) { output += gs + ' &#x2014; ' + this.printTagOpen + this.printJalaliMonthDay(j1) + this.printTagClose; }
+	else if (this.type == 9) { output += gs + ' &#x2014; ' + this.printTagOpen + this.printJalaliMonthDayYear(j1) + this.printTagClose; }
 
 	return output;
     }
@@ -94,9 +178,9 @@ var JalaliGCal = function ()
     this.getDaysFromGregorianString	= function (gs) {
 	var j1 = [1300, 1, 1], j2 = [1301, 1, 1], withDay = true;
 	//GM_log ("PARSER: type: ONE: " + this.type);
-	var type1 = /([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})\s+-\s+([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH1 DAY1, YEAR1 - MONTH2 DAY2, YEAR2
-	var type2 = /([A-Z][a-z]{2})\s+(\d{1,2})\s+-\s+([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH1 DAY1 - MONTH2 DAY2, YEAR
-	var type3 = /([A-Z][a-z]{2})\s+(\d{1,2})\s+-\s+(\d{1,2})\s+(\d{4})/; // MONTH DAY1 - DAY2, YEAR
+	var type1 = /([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})\s+[\-–]\s+([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH1 DAY1, YEAR1 - MONTH2 DAY2, YEAR2
+	var type2 = /([A-Z][a-z]{2})\s+(\d{1,2})\s+[\-–]\s+([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH1 DAY1 - MONTH2 DAY2, YEAR
+	var type3 = /([A-Z][a-z]{2})\s+(\d{1,2})\s+[\-–]\s+(\d{1,2})\s+(\d{4})/; // MONTH DAY1 - DAY2 YEAR
 	var type4 = /([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH DAY, YEAR
 	var type5 = /([A-Z][a-z]{2,})\s+(\d{4})/; // FULLMONTH YEAR
 	var type6 = /([A-Z][a-z]{2})\s+(\d{1,2})\/(\d{1,2})/; // WEEKDAY MONTHNUM/DAY
@@ -110,44 +194,33 @@ var JalaliGCal = function ()
 	    else if (type2.test(gs))	{ this.type = 2; var res = type2.exec(gs), m1 = this.getGregorianMonthByName(res[1]), d1 = Number(res[2]), m2 = this.getGregorianMonthByName(res[3]), d2 = Number(res[4]), y1 = Number(res[5]); this.g1 = [y1, m1, d1]; this.g2 = [y1, m2, d2]; j1 = this.jc.gregorianToJalali (this.g1); j2 = this.jc.gregorianToJalali (this.g2); withDay = true; }
 	    else if (type3.test(gs))	{ this.type = 3; var res = type3.exec(gs), m1 = this.getGregorianMonthByName(res[1]), d1 = Number(res[2]), d2 = Number(res[3]), y1 = Number(res[4]); this.g1 = [y1, m1, d1]; this.g2 = [y1, m1, d2]; j1 = this.jc.gregorianToJalali (this.g1); j2 = this.jc.gregorianToJalali (this.g2); withDay = true; }
 	    else if (type4.test(gs))	{ this.type = 4; var res = type4.exec(gs), m1 = this.getGregorianMonthByName(res[1]), d1 = Number(res[2]), y1 = Number(res[3]); this.g1 = [y1, m1, d1]; this.g2 = [y1, m1, d1]; j1 = this.jc.gregorianToJalali (this.g1); j2 = this.jc.gregorianToJalali (this.g2); withDay = true; }
-	    else if (type5.test(gs))	{ this.type = 5; var res = type5.exec(gs), m1 = this.getGregorianMonthByName(res[1]), y1 = Number(res[2]); this.g1 = [y1, m1, 1]; this.g2 = [y1, m1, this.jc.getGregorianDaysInMonth(y1, m1)]; j1 = this.jc.gregorianToJalali (this.g1); j2 = this.jc.gregorianToJalali (this.g2); withDay = false; } 
-	    else			{ GM_log ("ERROR IN PARSER! type=1-5 - g1, g2: " + this.g1 + ' - ' + this.g2); return false; }
+	    else if (type5.test(gs))	{ this.type = 5; var res = type5.exec(gs), m1 = this.getGregorianMonthByName(res[1]), y1 = Number(res[2]); this.g1 = [y1, m1, 1]; this.g2 = [y1, m1, this.jc.getGregorianDaysInMonth(y1, m1)]; j1 = this.jc.gregorianToJalali (this.g1); j2 = this.jc.gregorianToJalali (this.g2); withDay = false; }
+	    else			{ GM_log ("ERROR IN PARSER! type=" + this.type + " - g1, g2: " + this.g1 + ' - ' + this.g2); return false; }
 	}
 
 	// cheadX
 	else if (this.type == 6) {
-	    if      (type6.test(gs))	{ this.type = 6; var res = type6.exec(gs); if (this.g1[1] > Number(res[2])) { this.g1[0] += 1; } this.g1[1] = Number(res[2]); this.g1[2] = Number(res[3]); this.g1[3] = res[1]; j1 = this.jc.gregorianToJalali (this.g1); } 
-	    else			{ GM_log ("ERROR IN PARSER! type=6 - g1, g2: " + this.g1 + ' - ' + this.g2); return false; }
+	    if      (type6.test(gs))	{ this.type = 6; var res = type6.exec(gs); if (this.g1[1] > Number(res[2])) { this.g1[0] += 1; } this.g1[1] = Number(res[2]); this.g1[2] = Number(res[3]); this.g1[3] = res[1]; j1 = this.jc.gregorianToJalali (this.g1); }
+	    else			{ GM_log ("ERROR IN PARSER! type=" + this.type + " - g1, g2: " + this.g1 + ' - ' + this.g2); return false; }
 	}
 
 	// dhX
 	else if (this.type == 7) {
-	    if (type7.test(gs))		{
-		this.type = 7;
-		var res = type7.exec(gs);
-		if (this.g1[2] > Number(res[1])) {
-		    this.g1[1] += 1;
-		    if (this.g1[1] > 12) {
-			this.g1[1] = 1;
-			this.g1[0] += 1;
-		    }
-		}
-		this.g1[2] = Number(res[1]);
-		j1 = this.jc.gregorianToJalali (this.g1); } 
-	    else			{ GM_log ("ERROR IN PARSER! type=7 - g1, g2: " + this.g1 + ' - ' + this.g2); return false; }
+	    if (type7.test(gs))		{ var res = type7.exec(gs); if (this.g1[2] > Number(res[1])) { this.g1[1] += 1; if (this.g1[1] > 12) { this.g1[1] = 1; this.g1[0] += 1; } } this.g1[2] = Number(res[1]); j1 = this.jc.gregorianToJalali (this.g1); }
+	    else			{ GM_log ("ERROR IN PARSER! type=" + this.type + " - g1, g2: " + this.g1 + ' - ' + this.g2); return false; }
 	}
 
 	// lv_listview
 	else if (8 <= this.type && this.type <= 9) {
-	    if (type9.test(gs))		{ this.type = 9; var res = type9.exec(gs); this.g1[0] = Number(res[3]); this.g1[1] = this.getGregorianMonthByName(res[1]); this.g1[2] = Number(res[2]); j1 = this.jc.gregorianToJalali (this.g1); } 
-	    if (type8.test(gs))		{ this.type = 8; var res = type8.exec(gs); this.g1[1] = this.getGregorianMonthByName(res[1]); this.g1[2] = Number(res[2]); j1 = this.jc.gregorianToJalali (this.g1); } 
-	    else			{ GM_log ("ERROR IN PARSER! type=8-9 - g1, g2: " + this.g1 + ' - ' + this.g2); return false; }
+	    if (type9.test(gs))		{ this.type = 9; var res = type9.exec(gs); this.g1[0] = Number(res[3]); this.g1[1] = this.getGregorianMonthByName(res[1]); this.g1[2] = Number(res[2]); j1 = this.jc.gregorianToJalali (this.g1); }
+	    if (type8.test(gs))		{ this.type = 8; var res = type8.exec(gs); this.g1[1] = this.getGregorianMonthByName(res[1]); this.g1[2] = Number(res[2]); j1 = this.jc.gregorianToJalali (this.g1); }
+	    else			{ GM_log ("ERROR IN PARSER! type=" + this.type + " - g1, g2: " + this.g1 + ' - ' + this.g2); return false; }
 	}
 
 	// dafault
 	else				{ GM_log ("ERROR IN PARSER!  g1, g2: " + this.g1 + ' - ' + this.g2); return false; }
 
-	//GM_log ("PARSER: type: TWO: " + this.type);
+	//GM_log ("PARSER: recognized type: " + this.type);
 	//GM_log ("PARSER: g1, g2: " + this.g1 + ' - ' + this.g2);
 	//GM_log ("PARSER: j1, j2: " + j1 + ' - ' + j2);
 	return [j1, j2, withDay];
@@ -186,23 +259,13 @@ var JalaliGCal = function ()
 	    }
 
 	    // dhX
-	    obj = document.getElementById('dh0');
-	    if (obj)
+	    for (var i = 0; i < 6*7; i++)
 	    {
-
-		if (obj.parentNode.className.indexOf('dayNotInMonth') >= 0)
-		{
-		    mythis.jc.gregorianPrevMonth(mythis.g1);
-		}
-
-		for (var i = 0; i < 6*7; i++)
-		{
-		    mythis.type = 7;
-		    id = 'dh' + i;
-		    obj = document.getElementById(id);
-		    if (!obj) { break; }
-		    mythis.updateToJalali (obj);
-		}
+		mythis.type = 7;
+		id = 'dh' + i;
+		obj = document.getElementById(id);
+		if (!obj) { break; }
+		mythis.updateToJalali (obj);
 	    }
 
 	    // lv_listview
@@ -247,6 +310,25 @@ var JalaliGCal = function ()
 
 
 /*
+ * Jalali Calendar in JavaScript
+ */ 
+
+/*
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You can receive a copy of GNU Lesser General Public License at the
+ * World Wide Web address <http://www.gnu.org/licenses/lgpl.html>.
+ */
+
+/*
  * Copyright (C) 2001  Roozbeh Pournader <roozbeh@sharif.edu>
  * Copyright (C) 2001  Mohammad Toossi <toossi@umd.edu>
  * Copyright (C) 2003  Behdad Esfahbod <js@behdad.org>
@@ -258,7 +340,7 @@ var JalaliGCal = function ()
  *
  * 2006-May-21:
  *      Move all Jalali support to JalaliCalendar object
- * 
+ *
  * 2003-Mar-29:
  *      Ported to javascript by Behdad Esfahbod
  *
@@ -425,6 +507,8 @@ var JalaliCalendar = function ()
     }
 }
 
+
+// The END ///////////////////////////////////////////////////////////////
 
 main();
 
