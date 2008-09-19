@@ -34,11 +34,11 @@
 /* Changes:
  *
  * 2008-09-19: Version 2.3.
- *	Fix 
+ *	Some more fixes.
  *	--Behnam "ZWNJ" Esfahbod
  *
  * 2008-09-19: Version 2.2.
- *	Support English and Persian numbers and months names
+ *	Support English and Persian numbers and months names.
  *	--Behnam "ZWNJ" Esfahbod
  *
  * 2008-08-29: Version 2.0.
