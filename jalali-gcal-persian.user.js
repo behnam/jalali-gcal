@@ -1,11 +1,10 @@
-
 // ==UserScript==
-// @name           Jalali GCal
-// @namespace      http://code.google.com/p/jalali-gcal
-// @description    Adds Jalali calendar to Google Calendar web interface
-// @include        http://*.google.com/calendar/render*
-// @include        https://*.google.com/calendar/render*
-// @version        2.2
+// @name		Jalali GCal
+// @namespace		http://code.google.com/p/jalali-gcal
+// @description		Adds Jalali calendar to Google Calendar web interface
+// @include		http://*.google.com/calendar/render*
+// @include		https://*.google.com/calendar/render*
+// @version		2.3
 // ==/UserScript==
 
 /*
@@ -34,20 +33,24 @@
 
 /* Changes:
  *
+ * 2008-09-19: Version 2.3.
+ *	Fix 
+ *	--Behnam "ZWNJ" Esfahbod
+ *
  * 2008-09-19: Version 2.2.
- *     Support English and Persian numbers and months names
- *     --Behnam "ZWNJ" Esfahbod
+ *	Support English and Persian numbers and months names
+ *	--Behnam "ZWNJ" Esfahbod
  *
  * 2008-08-29: Version 2.0.
- *     Make compatible with new Google Calendar UI.
- *     --Mehdi Ahmadizadeh
+ *	Make compatible with new Google Calendar UI.
+ *	--Mehdi Ahmadizadeh
  *
  * 2007-01-03: Version 1.2.
- *     Fix a date format.
- *     --Behnam "ZWNJ" Esfahbod
+ *	Fix a date format.
+ *	--Behnam "ZWNJ" Esfahbod
  *
  * 2006-06-01: Version 1.1.
- *     --Behnam "ZWNJ" Esfahbod
+ *	--Behnam "ZWNJ" Esfahbod
  *
  */
 
@@ -347,10 +350,10 @@ var JalaliGCal = function ()
 /* Changes:
  *
  * 2006-May-21:
- *      Move all Jalali support to JalaliCalendar object
+ *	Move all Jalali support to JalaliCalendar object
  *
  * 2003-Mar-29:
- *      Ported to javascript by Behdad Esfahbod
+ *	Ported to javascript by Behdad Esfahbod
  *
  * 2001-Sep-21:
  *	Fixed a bug with "30 Esfand" dates, reported by Mahmoud Ghandi
