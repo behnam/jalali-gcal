@@ -30,6 +30,7 @@
 /* Changes:
  *
  * 2008-09-19: Version 2.2.
+ *     Support English and Persian numbers and months names
  *     --Behnam "ZWNJ" Esfahbod
  *
  * 2008-08-29: Version 2.0.
@@ -57,11 +58,11 @@ var main = function ()
 var JalaliGCal = function ()
 {
     // Preferences
-    this.usePersianDigits	= false;
-    this.usePersianNames	= false;
+    this.usePersianDigits	= true;
+    this.usePersianNames	= true;
 
     if (this.usePersianDigits) {
-	this.printTagOpen		= '<span style="font-family: \'DejaVu Sans\',Tahoma,sans;">'
+	this.printTagOpen		= '<span style="direction: rtl; unicode-bidi: embed; font-family: \'DejaVu Sans\',Tahoma,sans; font-weight: bold; font-size: 120%;">'
 	this.printTagClose		= '</span>'
     }
 
@@ -77,8 +78,8 @@ var JalaliGCal = function ()
     this.g2 = [];
 
     // Persian number support
-    this.printPerisanDigit		= function (i)	{ return ["&#1632;", "&#1633;", "&#1634;", "&#1635;", "&#1636;", "&#1637;", "&#1638;", "&#1639;", "&#1640;", "&#1641;"][i]; }
-    this.printPersianNumber		= function (n)	{ var s = ''; for (var ch in String(n)) s += this.printPerisanDigit(parseInt(ch)); return s; }
+    this.printPerisanDigit		= function (i)	{ return ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"][i]; }
+    this.printPersianNumber		= function (n)	{ var s = ''; for (var i in String(n)) s += this.printPerisanDigit(parseInt(String(n).charAt(i))); return s; }
     this.pN	= this.printNumber	= function (n)	{ if (this.usePersianDigits) { return this.printPersianNumber(n); } else { return String(n); } }
 
     // Jalali string outputs
@@ -86,8 +87,8 @@ var JalaliGCal = function ()
     this.jalaliMonthNameEnglishAbbr	= ["Far","Ord","Kho", "Tir","Mor","Sha", "Meh","Aba","Aza", "Dey","Bah","Esf"];
 
     this.jalaliMonthNamePersianFull	= ["فروردین","اردی‌بهشت","خرداد", "تیر","مرداد","شهریور", "مهر","آبان","آذر", "دی","بهمن","اسفند"];
-    this.jalaliMonthNamePersianAbbr	= ["فرو.","ارد.","خرد.", "تیر.","مرد.","شهر.", "مهر.","آبا.","آذر.", "دی","بهم.","اسف."];
-    //this.jalaliMonthNamePersianAbbr		= ["فروردین","اردی‌بهشت","خرداد", "تیر","مرداد","شهریور", "مهر","آبان","آذر", "دی","بهمن","اسفند"];
+    this.jalaliMonthNamePersianAbbr	= this.jalaliMonthNamePersianFull;
+    //this.jalaliMonthNamePersianAbbr	= ["فرو.","ارد.","خرد.", "تیر.","مرد.","شهر.", "مهر.","آبا.","آذر.", "دی","بهم.","اسف."];
 
     this.pJMNA	= this.printJalaliMonthNameAbbr	= function (i)	{ if (this.usePersianNames) { return this.jalaliMonthNamePersianAbbr[i-1]; } else { return this.jalaliMonthNameEnglishAbbr[i-1]; } }
     this.pJMNF	= this.printJalaliMonthNameFull	= function (i)	{ if (this.usePersianNames) { return this.jalaliMonthNamePersianFull[i-1]; } else { return this.jalaliMonthNameEnglishFull[i-1]; } }
