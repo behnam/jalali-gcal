@@ -1,3 +1,4 @@
+
 // ==UserScript==
 // @name           Jalali GCal
 // @namespace      http://code.google.com/p/jalali-gcal
@@ -66,15 +67,17 @@ var JalaliGCal = function ()
     this.usePersianNames	= true;
 
     if (this.usePersianDigits) {
-	this.printTagOpen		= '<span style="direction: rtl; unicode-bidi: embed; font-family: \'DejaVu Sans\',Tahoma,sans; font-weight: bold; font-size: 120%;">'
-	this.printTagClose		= '</span>'
+	this.tagOpen		= '<span style="direction: rtl; unicode-bidi: embed; font-family: \'DejaVu Sans\',Tahoma,sans; font-weight: bold; font-size: 120%;">'
+	this.tagClose		= '</span>'
     }
 
     else {
-	this.printTagOpen		= '<i>'
-	this.printTagClose		= '</i>'
+	this.tagOpen		= '<i>'
+	this.tagClose		= '</i>'
     }
 
+    //this.splitter	= ' &#x2014; '
+    this.splitter	= ' &mdash; '
 
     // Init values
     this.jc = new JalaliCalendar();
@@ -149,7 +152,7 @@ var JalaliGCal = function ()
 	var j1 = days[0], j2 = days[1], withDay = days[2], output = '';
 	// general
 	if (1 <= this.type && this.type <= 5) {
-	    output += gs + ' &#x2014; ' + this.printTagOpen;
+	    output += gs + this.splitter + this.tagOpen;
 	    if (j1[0] == j2[0]) {	if (j1[1] == j2[1]) {	if (j1[2] == j2[2]) {	if (withDay)	output += this.printJalaliMonthDayYear(j1);
 											else		output += this.printJalaliMonthYear(j1);
 							    }
@@ -164,16 +167,16 @@ var JalaliGCal = function ()
 	    else {	if (withDay)	output += this.printJalaliMonthDayYearMonthDayYear(j1,j2);
 			else		output += this.printJalaliMonthYearMonthYear(j1,j2);
 	    }
-	    output += this.printTagClose;
+	    output += this.tagClose;
 	}
 
 	// cheadX
-	else if (this.type == 6) { output += this.g1[3] + ' ' + this.g1[2] + ' &#x2014; ' + this.printTagOpen + this.printJalaliDay(j1) + this.printTagClose; }
+	else if (this.type == 6) { output += this.g1[3] + ' ' + this.g1[2] + this.splitter + this.tagOpen + this.printJalaliDay(j1) + this.tagClose; }
 	// dhX
-	else if (this.type == 7) { output += this.g1[2] + ' &#x2014; ' + this.printTagOpen + this.printJalaliDay(j1) + this.printTagClose; }
+	else if (this.type == 7) { output += this.g1[2] + this.splitter + this.tagOpen + this.printJalaliDay(j1) + this.tagClose; }
 	// lv_listview
-	else if (this.type == 8) { output += gs + ' &#x2014; ' + this.printTagOpen + this.printJalaliMonthDay(j1) + this.printTagClose; }
-	else if (this.type == 9) { output += gs + ' &#x2014; ' + this.printTagOpen + this.printJalaliMonthDayYear(j1) + this.printTagClose; }
+	else if (this.type == 8) { output += gs + this.splitter + this.tagOpen + this.printJalaliMonthDay(j1) + this.tagClose; }
+	else if (this.type == 9) { output += gs + this.splitter + this.tagOpen + this.printJalaliMonthDayYear(j1) + this.tagClose; }
 
 	return output;
     }
@@ -182,7 +185,7 @@ var JalaliGCal = function ()
 
     this.getDaysFromGregorianString	= function (gs) {
 	var j1 = [1300, 1, 1], j2 = [1301, 1, 1], withDay = true;
-	//GM_log ("PARSER: type: ONE: " + this.type);
+	//GM_log ("PARSER: Recognized (1) type: " + this.type);
 	var type1 = /([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})\s+[\-–]\s+([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH1 DAY1, YEAR1 - MONTH2 DAY2, YEAR2
 	var type2 = /([A-Z][a-z]{2})\s+(\d{1,2})\s+[\-–]\s+([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH1 DAY1 - MONTH2 DAY2, YEAR
 	var type3 = /([A-Z][a-z]{2})\s+(\d{1,2})\s+[\-–]\s+(\d{1,2})\s+(\d{4})/; // MONTH DAY1 - DAY2 YEAR
@@ -211,7 +214,7 @@ var JalaliGCal = function ()
 
 	// dhX
 	else if (this.type == 7) {
-	    if (type7.test(gs))		{ var res = type7.exec(gs); if (this.g1[2] > Number(res[1])) { this.g1[1] += 1; if (this.g1[1] > 12) { this.g1[1] = 1; this.g1[0] += 1; } } this.g1[2] = Number(res[1]); j1 = this.jc.gregorianToJalali (this.g1); }
+	    if (type7.test(gs))		{ this.type = 7; var res = type7.exec(gs); if (this.g1[2] > Number(res[1])) { this.g1[1] += 1; if (this.g1[1] > 12) { this.g1[1] = 1; this.g1[0] += 1; } } this.g1[2] = Number(res[1]); j1 = this.jc.gregorianToJalali (this.g1); }
 	    else			{ GM_log ("ERROR IN PARSER! type=" + this.type + " - g1, g2: " + this.g1 + ' - ' + this.g2); return false; }
 	}
 
@@ -223,9 +226,9 @@ var JalaliGCal = function ()
 	}
 
 	// dafault
-	else				{ GM_log ("ERROR IN PARSER!  g1, g2: " + this.g1 + ' - ' + this.g2); return false; }
+	else				{ GM_log ("ERROR IN PARSER! type=" + this.type + " - g1, g2: " + this.g1 + ' - ' + this.g2); return false; }
 
-	//GM_log ("PARSER: recognized type: " + this.type);
+	//GM_log ("PARSER: Recognized (2) type: " + this.type);
 	//GM_log ("PARSER: g1, g2: " + this.g1 + ' - ' + this.g2);
 	//GM_log ("PARSER: j1, j2: " + j1 + ' - ' + j2);
 	return [j1, j2, withDay];
