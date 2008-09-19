@@ -62,8 +62,8 @@ var main = function ()
 var JalaliGCal = function ()
 {
     // Preferences
-    this.usePersianDigits	= false;
-    this.usePersianNames	= false;
+    this.usePersianDigits	= true;
+    this.usePersianNames	= true;
 
     if (this.usePersianDigits) {
 	this.printTagOpen		= '<span style="direction: rtl; unicode-bidi: embed; font-family: \'DejaVu Sans\',Tahoma,sans; font-weight: bold; font-size: 120%;">'
