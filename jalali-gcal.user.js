@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name           Jalali GCal
 // @namespace      http://zwnj.org/proj
-// @description    Adds Jalali Calendar to Google Calendar
-// @include        http://www.google.com/calendar/render*
-// @version        1.1
+// @description    Adds Jalali calendar to the web interface of Google Calendar
+// @include        *.google.com/calendar/render*
+// @version        1.2
 // ==/UserScript==
 
 /*
@@ -50,7 +50,7 @@ var JalaliGCal = function ()
     this.printJalaliMonthYearMonthYear		= function (j1, j2)	{ return this.printJalaliMonthNameFull(j1[1]) +	' ' +			j1[0] +	' - ' +	this.printJalaliMonthNameFull(j2[1]) +	' ' +			j2[0]	; }
     this.printJalaliMonthDayYear		= function (j1)		{ return this.printJalaliMonthName(j1[1]) +	' ' +	j1[2] +	', ' +	j1[0]											; }
     this.printJalaliMonthDayYear2		= function (j1)		{ return this.printJalaliMonthName(j1[1]) +	' ' +	j1[2] +	' ' +	j1[0]											; }
-    this.printJalaliMonthDayDayYear		= function (j1, j2)	{ return this.printJalaliMonthName(j1[1]) +	' ' +	j1[2] +			' - ' +							j2[2] +	', ' +	j2[0]	; }
+    this.printJalaliMonthDayDayYear		= function (j1, j2)	{ return this.printJalaliMonthName(j1[1]) +	' ' +	j1[2] +			' - ' +							j2[2] +	' ' +	j2[0]	; }
     this.printJalaliMonthDayMonthDayYear	= function (j1, j2)	{ return this.printJalaliMonthName(j1[1]) +	' ' +	j1[2] +			' - ' +	this.printJalaliMonthName(j2[1]) +	' ' +	j2[2] +	', ' +	j2[0]	; }
     this.printJalaliMonthDayYearMonthDayYear	= function (j1, j2)	{ return this.printJalaliMonthName(j1[1]) +	' ' +	j1[2] +	', ' +	j1[0] +	' - ' +	this.printJalaliMonthName(j2[1]) +	' ' +	j2[2] +	', ' +	j2[0]	; }
 
@@ -96,7 +96,7 @@ var JalaliGCal = function ()
 	//GM_log ("PARSER: type: ONE: " + this.type);
 	var type1 = /([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})\s+-\s+([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH1 DAY1, YEAR1 - MONTH2 DAY2, YEAR2
 	var type2 = /([A-Z][a-z]{2})\s+(\d{1,2})\s+-\s+([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH1 DAY1 - MONTH2 DAY2, YEAR
-	var type3 = /([A-Z][a-z]{2})\s+(\d{1,2})\s+-\s+(\d{1,2}),\s+(\d{4})/; // MONTH DAY1 - DAY2, YEAR
+	var type3 = /([A-Z][a-z]{2})\s+(\d{1,2})\s+-\s+(\d{1,2})\s+(\d{4})/; // MONTH DAY1 - DAY2, YEAR
 	var type4 = /([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH DAY, YEAR
 	var type5 = /([A-Z][a-z]{2,})\s+(\d{4})/; // FULLMONTH YEAR
 	var type6 = /([A-Z][a-z]{2})\s+(\d{1,2})\/(\d{1,2})/; // WEEKDAY MONTHNUM/DAY
