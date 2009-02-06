@@ -27,24 +27,30 @@
  */
 
 /*
- * Copyright (C) 2006,2007,2008  Behnam "ZWNJ" Esfahbod <behnam@zwnj.org>
+ * Copyright (C) 2006,2007,2008  Behnam Esfahbod "ZWNJ" <behnam@zwnj.org>
  * Copyright (C) 2008  Mehdi Ahmadizadeh <mehdia@buffalo.edu>
  */
 
 /* Changes:
  *
+ * 2009-02-06: Version 2.5.
+ *	* Use U+2013 EN DASH for range of dates
+ *	* Use '\W' to accept all range seperators (in type detection regexp)
+ *	  (thanks to http://code.google.com/u/bakhshian/)
+ *	--Behnam Esfahbod "ZWNJ"
+ *
  * 2008-09-19: Version 2.4.
  *	* Support writing month name on the first day of each month in the
  *	calendar table
- *	--Behnam "ZWNJ" Esfahbod
+ *	--Behnam Esfahbod "ZWNJ"
  *
  * 2008-09-19: Version 2.3.
  *	* Some more fixes.
- *	--Behnam "ZWNJ" Esfahbod
+ *	--Behnam Esfahbod "ZWNJ"
  *
  * 2008-09-19: Version 2.2.
  *	* Support English and Persian numbers and months names.
- *	--Behnam "ZWNJ" Esfahbod
+ *	--Behnam Esfahbod "ZWNJ"
  *
  * 2008-08-29: Version 2.0.
  *	* Make compatible with new Google Calendar UI.
@@ -52,10 +58,10 @@
  *
  * 2007-01-03: Version 1.2.
  *	* Fix a date format.
- *	--Behnam "ZWNJ" Esfahbod
+ *	--Behnam Esfahbod "ZWNJ"
  *
  * 2006-06-01: Version 1.1.
- *	--Behnam "ZWNJ" Esfahbod
+ *	--Behnam Esfahbod "ZWNJ"
  *
  */
 
