@@ -216,9 +216,9 @@ var JalaliGCal = function ()
 	// Types
 
 	// dateunderlay
-	var type1 = /([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})\s+[\-–]\s+([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH1 DAY1, YEAR1 - MONTH2 DAY2, YEAR2
-	var type2 = /([A-Z][a-z]{2})\s+(\d{1,2})\s+[\-–]\s+([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH1 DAY1 - MONTH2 DAY2, YEAR
-	var type3 = /([A-Z][a-z]{2})\s+(\d{1,2})\s+[\-–]\s+(\d{1,2})\s+(\d{4})/; // MONTH DAY1 - DAY2 YEAR
+	var type1 = /([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})\s+\W\s+([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH1 DAY1, YEAR1 - MONTH2 DAY2, YEAR2
+	var type2 = /([A-Z][a-z]{2})\s+(\d{1,2})\s+\W\s+([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH1 DAY1 - MONTH2 DAY2, YEAR
+	var type3 = /([A-Z][a-z]{2})\s+(\d{1,2})\s+\W\s+(\d{1,2})\s+(\d{4})/; // MONTH DAY1 - DAY2 YEAR
 	var type4 = /([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/; // MONTH DAY, YEAR
 	var type5 = /([A-Z][a-z]{2,})\s+(\d{4})/; // FULLMONTH YEAR
 
