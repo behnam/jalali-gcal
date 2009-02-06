@@ -95,8 +95,8 @@ var JalaliGCal = function ()
 	this.tagClose		= '</i>'
     }
 
-    //this.splitter	= ' &#x2014; '
     this.splitter	= ' &mdash; '
+    this.dash		= ' &ndash; '
 
 
     // Init values
@@ -147,26 +147,26 @@ var JalaliGCal = function ()
 									}
 
     // Month & Year (2)
-    this.printJalaliMonthMonthYear		= function (j1, j2)	{ return this.pJMNF(j1[1]) +	' - ' +	this.pJMNF(j2[1]) +	' ' +	this.pN(j2[0])	; }
-    this.printJalaliMonthYearMonthYear		= function (j1, j2)	{ return this.pJMNF(j1[1]) +	' ' +	this.pN(j1[0]) +	' - ' +	this.pJMNF(j2[1]) +	' ' +	this.pN(j2[0])	; }
+    this.printJalaliMonthMonthYear		= function (j1, j2)	{ return this.pJMNF(j1[1]) +	this.dash +	this.pJMNF(j2[1]) +	' ' +	this.pN(j2[0])	; }
+    this.printJalaliMonthYearMonthYear		= function (j1, j2)	{ return this.pJMNF(j1[1]) +	' ' +	this.pN(j1[0]) +	this.dash +	this.pJMNF(j2[1]) +	' ' +	this.pN(j2[0])	; }
 
     this.printJalaliMonthDayDayYear		= function (j1, j2)	{ if (this.usePersianNames)
-									  return this.pN(j1[2]) +	' - ' +	this.pN(j2[2]) +	' ' +	this.pJMNA(j1[1]) +	' ' +	this.pN(j2[0])	;
+									  return this.pN(j1[2]) +	this.dash +	this.pN(j2[2]) +	' ' +	this.pJMNA(j1[1]) +	' ' +	this.pN(j2[0])	;
 									else
-									  return this.pJMNA(j1[1]) +	' ' +	this.pN(j1[2]) +	' - ' +	this.pN(j2[2]) +	', ' +	this.pN(j2[0])	;
+									  return this.pJMNA(j1[1]) +	' ' +	this.pN(j1[2]) +	this.dash +	this.pN(j2[2]) +	', ' +	this.pN(j2[0])	;
 									}
 
     // Day & Month & Year (2)
     this.printJalaliMonthDayMonthDayYear	= function (j1, j2)	{ if (this.usePersianNames)
-									  return this.pN(j1[2]) +	' ' +	this.pJMNA(j1[1]) +	' - ' +	this.pN(j2[2]) +	' ' +	this.pJMNA(j2[1]) +	' ' +	this.pN(j2[0])	;
+									  return this.pN(j1[2]) +	' ' +	this.pJMNA(j1[1]) +	this.dash +	this.pN(j2[2]) +	' ' +	this.pJMNA(j2[1]) +	' ' +	this.pN(j2[0])	;
 									else
-									  return this.pJMNA(j1[1]) +	' ' +	this.pN(j1[2]) +	' - ' +	this.pJMNA(j2[1]) +	' ' +	this.pN(j2[2]) +	', ' +	this.pN(j2[0])	;
+									  return this.pJMNA(j1[1]) +	' ' +	this.pN(j1[2]) +	this.dash +	this.pJMNA(j2[1]) +	' ' +	this.pN(j2[2]) +	', ' +	this.pN(j2[0])	;
 									}
 
     this.printJalaliMonthDayYearMonthDayYear	= function (j1, j2)	{ if (this.usePersianNames)
-									  return this.pN(j1[2]) +	' ' +	this.pJMNA(j1[1]) +	' ' +	this.pN(j1[0]) +	' - ' +	this.pN(j2[2]) +	' ' +	this.pJMNA(j2[1]) +	' ' +	this.pN(j2[0])	;
+									  return this.pN(j1[2]) +	' ' +	this.pJMNA(j1[1]) +	' ' +	this.pN(j1[0]) +	this.dash +	this.pN(j2[2]) +	' ' +	this.pJMNA(j2[1]) +	' ' +	this.pN(j2[0])	;
 									else
-									  return this.pJMNA(j1[1]) +	' ' +	this.pN(j1[2]) +	', ' +	this.pN(j1[0]) +	' - ' +	this.pJMNA(j2[1]) +	' ' +	this.pN(j2[2]) +	', ' +	this.pN(j2[0])	;
+									  return this.pJMNA(j1[1]) +	' ' +	this.pN(j1[2]) +	', ' +	this.pN(j1[0]) +	this.dash +	this.pJMNA(j2[1]) +	' ' +	this.pN(j2[2]) +	', ' +	this.pN(j2[0])	;
 									}
 
 
