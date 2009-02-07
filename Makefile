@@ -1,5 +1,5 @@
 
-VERSION=2.6
+VERSION=3.0
 
 all: editions
 

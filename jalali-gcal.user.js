@@ -39,6 +39,10 @@
 
 /* Changes:
  *
+ * 2009-02-07: Version 3.0.
+ *	* Fix date interval detection and Month view
+ *	--Behnam Esfahbod "ZWNJ"
+ *
  * 2009-02-07: Version 2.6.
  *	* Update to new GCal changes
  *	* Use jQeury
@@ -112,8 +116,9 @@ var JalaliGCal = function ()
 
     // Init values
     this.jc = new JalaliCalendar();
-    this.g1 = [];
-    this.g2 = [];
+    this.gIntervalStart	= [];
+    this.gIntervalEnd	= [];
+    this.gIntervalFixed	= null;
 
     // Persian number support
     this.printPerisanDigit		= function (i)	{ return ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"][i]; }
@@ -222,115 +227,189 @@ var JalaliGCal = function ()
 
     this.getGregorianMonthByName	= function (s)	{ return "JanFebMarAprMayJunJulAugSepOctNovDec".indexOf(s.substring(0,3))/3 + 1; }
 
-    this.getDaysFromGregorianString	= function (gs) {
+    this.getDaysFromGregorianString	= function (gs, setGlobal) {
 	var type = 0,
 	    j1 = [1300, 1, 1],
 	    j2 = [1301, 1, 1],
 	    withDay = true;
 
-	// Matching
+	var g1 = null,
+	    g2 = null;
+
+	// GENERIC
+
 	if (this.ParserTypes[1].test(gs)) {
 	    type = 1;
-	    var res = this.ParserTypes[1].exec(gs), m1 = this.getGregorianMonthByName(res[1]), d1 = Number(res[2]), y1 = Number(res[3]), m2 = this.getGregorianMonthByName(res[4]), d2 = Number(res[5]), y2 = Number(res[6]);
-	    this.g1 = [y1, m1, d1];
-	    this.g2 = [y2, m2, d2];
-	    j1 = this.jc.gregorianToJalali (this.g1);
-	    j2 = this.jc.gregorianToJalali (this.g2);
+	    var res = this.ParserTypes[type].exec(gs);
+
+	    var y1 = Number(res[3]),
+		m1 = this.getGregorianMonthByName(res[1]),
+		d1 = Number(res[2]),
+		y2 = Number(res[6]),
+		m2 = this.getGregorianMonthByName(res[4]),
+		d2 = Number(res[5]);
+
+	    g1 = [y1, m1, d1];
+	    g2 = [y2, m2, d2];
+
+	    j1 = this.jc.gregorianToJalali (g1);
+	    j2 = this.jc.gregorianToJalali (g2);
 	    withDay = true;
 	}
 
 	else if (this.ParserTypes[2].test(gs)) {
 	    type = 2;
-	    var res = this.ParserTypes[2].exec(gs), m1 = this.getGregorianMonthByName(res[1]), d1 = Number(res[2]), m2 = this.getGregorianMonthByName(res[3]), d2 = Number(res[4]), y1 = Number(res[5]);
-	    this.g1 = [y1, m1, d1];
-	    this.g2 = [y1, m2, d2];
-	    j1 = this.jc.gregorianToJalali (this.g1);
-	    j2 = this.jc.gregorianToJalali (this.g2);
+	    var res = this.ParserTypes[type].exec(gs);
+
+	    var y1 = Number(res[5]),
+		m1 = this.getGregorianMonthByName(res[1]),
+		d1 = Number(res[2]),
+		m2 = this.getGregorianMonthByName(res[3]),
+		d2 = Number(res[4]);
+
+	    g1 = [y1, m1, d1];
+	    g2 = [y1, m2, d2];
+
+	    j1 = this.jc.gregorianToJalali (g1);
+	    j2 = this.jc.gregorianToJalali (g2);
 	    withDay = true;
 	}
 
 	else if (this.ParserTypes[3].test(gs)) {
 	    type = 3;
-	    var res = this.ParserTypes[3].exec(gs), m1 = this.getGregorianMonthByName(res[1]), d1 = Number(res[2]), d2 = Number(res[3]), y1 = Number(res[4]);
-	    this.g1 = [y1, m1, d1];
-	    this.g2 = [y1, m1, d2];
-	    j1 = this.jc.gregorianToJalali (this.g1);
-	    j2 = this.jc.gregorianToJalali (this.g2);
+	    var res = this.ParserTypes[type].exec(gs);
+
+	    var y1 = Number(res[4]),
+		m1 = this.getGregorianMonthByName(res[1]),
+		d1 = Number(res[2]),
+		d2 = Number(res[3]);
+
+	    g1 = [y1, m1, d1];
+	    g2 = [y1, m1, d2];
+
+	    j1 = this.jc.gregorianToJalali (g1);
+	    j2 = this.jc.gregorianToJalali (g2);
 	    withDay = true;
 	}
 
 	else if (this.ParserTypes[4].test(gs)) {
 	    type = 4;
-	    var res = this.ParserTypes[4].exec(gs), m1 = this.getGregorianMonthByName(res[1]), d1 = Number(res[2]), y1 = Number(res[3]);
-	    this.g1 = [y1, m1, d1];
-	    this.g2 = [y1, m1, d1];
-	    j1 = this.jc.gregorianToJalali (this.g1);
-	    j2 = this.jc.gregorianToJalali (this.g2);
+	    var res = this.ParserTypes[type].exec(gs);
+
+	    var y1 = Number(res[3]),
+		m1 = this.getGregorianMonthByName(res[1]),
+		d1 = Number(res[2]);
+
+	    g1 = [y1, m1, d1];
+	    g2 = [y1, m1, d1];
+
+	    j1 = this.jc.gregorianToJalali (g1);
+	    j2 = this.jc.gregorianToJalali (g2);
 	    withDay = true;
 	}
 
 	else if (this.ParserTypes[5].test(gs)) {
 	    type = 5;
-	    var res = this.ParserTypes[5].exec(gs), m1 = this.getGregorianMonthByName(res[1]), y1 = Number(res[2]);
-	    this.g1 = [y1, m1, 1];
-	    this.g2 = [y1, m1, this.jc.getGregorianDaysInMonth(y1, m1)];
-	    j1 = this.jc.gregorianToJalali (this.g1);
-	    j2 = this.jc.gregorianToJalali (this.g2);
+	    var res = this.ParserTypes[type].exec(gs);
+
+	    var m1 = this.getGregorianMonthByName(res[1]),
+		y1 = Number(res[2]);
+
+	    g1 = [y1, m1, 1];
+	    g2 = [y1, m1, this.jc.getGregorianDaysInMonth(y1, m1)];
+	    j1 = this.jc.gregorianToJalali (g1);
+	    j2 = this.jc.gregorianToJalali (g2);
 	    withDay = false;
 	}
 
+
+	// EXCEPTIONAL
+
 	else if (this.ParserTypes[6].test(gs)) {
 	    type = 6;
-	    var res = this.ParserTypes[6].exec(gs);
-	    if (this.g1[1] > Number(res[2])) {
-		this.g1[0] += 1;
+	    var res = this.ParserTypes[type].exec(gs);
+
+	    var y1 = this.gIntervalStart[0],
+		m1 = Number(res[2]),
+		d1 = Number(res[3]),
+		w1 = res[1];
+
+	    if (m1 < this.gIntervalStart[1]) {
+		y1 += 1;
 	    }
-	    this.g1[1] = Number(res[2]);
-	    this.g1[2] = Number(res[3]);
-	    this.g1[3] = res[1];
-	    j1 = this.jc.gregorianToJalali (this.g1);
+
+	    g1 = [y1, m1, d1, w1];
+	    j1 = this.jc.gregorianToJalali (g1);
 	}
 
 	else if (this.ParserTypes[7].test(gs)) {
 	    type = 7;
-	    var res = this.ParserTypes[7].exec(gs);
-	    this.g1[1] = this.getGregorianMonthByName(res[1]);
-	    this.g1[2] = Number(res[2]);
-	    j1 = this.jc.gregorianToJalali (this.g1);
+	    var res = this.ParserTypes[type].exec(gs);
+
+	    var y1 = this.gIntervalStart[0],
+		m1 = this.getGregorianMonthByName(res[1]),
+		d1 = Number(res[2]),
+
+	    g1 = [y1, m1, d1];
+	    j1 = this.jc.gregorianToJalali (g1);
 	}
 
 	else if (this.ParserTypes[8].test(gs)) {
 	    type = 8;
-	    var res = this.ParserTypes[8].exec(gs);
-	    this.g1[0] = Number(res[3]);
-	    this.g1[1] = this.getGregorianMonthByName(res[1]);
-	    this.g1[2] = Number(res[2]);
-	    j1 = this.jc.gregorianToJalali (this.g1);
+	    var res = this.ParserTypes[type].exec(gs);
+
+	    var y1 = Number(res[3]),
+		m1 = this.getGregorianMonthByName(res[1]),
+		d1 = Number(res[2]);
+
+	    g1 = [y1, m1, d1];
+	    j1 = this.jc.gregorianToJalali (g1);
 	}
 
 	else if (this.ParserTypes[9].test(gs)) {
 	    type = 9;
-	    var res = this.ParserTypes[9].exec(gs);
-	    if (this.g1[2] > Number(res[1])) {
-		this.g1[1] += 1;
-		if (this.g1[1] > 12) {
-		    this.g1[1] = 1;
-		    this.g1[0] += 1;
+	    var res = this.ParserTypes[type].exec(gs);
+
+	    var y1 = this.gIntervalStart[0],
+		m1 = this.gIntervalStart[1],
+		d1 = Number(res[1]);
+
+	    if (this.gIntervalFixed == false) {
+		GM_log ("PARSER: Fixing Global Interval!");
+		if (d1 > this.gIntervalStart[2]) {
+		    m1 -= 1;
+		    if (m1 < 1) { m1  = 12; y1 -= 1; }
+		    GM_log ("PARSER: Fixed!");
 		}
+		this.gIntervalFixed = true;
+		setGlobal = true;
 	    }
-	    this.g1[2] = Number(res[1]);
-	    j1 = this.jc.gregorianToJalali (this.g1);
+
+	    if (d1 < this.gIntervalStart[2]) {
+		m1 += 1;
+		if (m1 > 12) { m1  = 1; y1 += 1; }
+	    }
+
+	    g1 = [y1, m1, d1];
+	    j1 = this.jc.gregorianToJalali (g1);
 	}
 
 	else {
-	    GM_log ("PARSER: ERROR! | gs=" + gs + " | g1, g2: " + this.g1 + ' - ' + this.g2);
+	    GM_log ("PARSER: ERROR! | gs=" + gs + " | g1, g2: " + g1 + ' - ' + g2);
 	    return false;
 	}
 
-	GM_log ("PARSER: gs: " + gs);
-	GM_log ("PARSER: Recognized (2) type: " + type);
-	GM_log ("PARSER: g1, g2: " + this.g1 + ' - ' + this.g2);
+	GM_log ("PARSER: TYPE: " + type);
+	GM_log ("PARSER: FIXED: " + this.gIntervalFixed);
+	GM_log ("PARSER: S, E: " + this.gIntervalStart + ' - ' + this.gIntervalEnd);
+	GM_log ("PARSER: GS: " + gs);
+	GM_log ("PARSER: g1, g2: " + g1 + ' - ' + g2);
 	GM_log ("PARSER: j1, j2: " + j1 + ' - ' + j2);
+
+	if (setGlobal) {
+	    if (g1 !== null) { this.gIntervalStart	= g1; }
+	    if (g2 !== null) { this.gIntervalEnd	= g2; }
+	}
 
 	return [type, j1, j2, withDay];
     }
@@ -368,11 +447,9 @@ var JalaliGCal = function ()
 	    output += this.tagClose;
 	}
 
-	//else if (type == 6) { output += this.g1[3] + ' ' + this.g1[2] + this.splitter + this.tagOpen + this.printJalaliDay(j1) + this.tagClose; }
 	else if (type == 6) { output += gs + this.splitter + this.tagOpen + this.printJalaliMonumDay(j1) + this.tagClose; }
 	else if (type == 7) { output += gs + this.splitter + this.tagOpen + this.printJalaliMonthDay(j1) + this.tagClose; }
 	else if (type == 8) { output += gs + this.splitter + this.tagOpen + this.printJalaliMonthDayYear(j1) + this.tagClose; }
-	//else if (type == 9) { output += this.g1[2] + this.splitter + this.tagOpen + this.printJalaliDayOrMonth(j1) + this.tagClose; }
 	else if (type == 9) { output += gs + this.splitter + this.tagOpen + this.printJalaliDayOrMonth(j1) + this.tagClose; }
 
 	return output;
@@ -390,26 +467,29 @@ var JalaliGCal = function ()
 
     this.changedHtml	= function (obj)	{ return !this.getPrev(obj) || this.getPrev(obj) != this.getHtml(obj); }
     this.updateHtml	= function (obj, html)	{ this.setOrig (obj, this.getHtml(obj)); this.setHtml (obj, html); this.setPrev (obj, this.getHtml(obj)); }
-    this.updateToJalali	= function (obj)	{ this.updateHtml(obj, this.printJalali(this.getDaysFromGregorianString(this.getHtml(obj)), this.getHtml(obj))); }
+
+    this.updateToJalali	= function (obj, setGlobal)	{ this.updateHtml(obj, this.printJalali(this.getDaysFromGregorianString(this.getHtml(obj), setGlobal), this.getHtml(obj))); }
 
     this.loop = function (mythis) {
 
-	var dateunderlay = $('#dateunderlay').get(0);
-	if (dateunderlay && mythis.changedHtml(dateunderlay))
+	var global_date_range = document.getElementById("dateunderlay");
+	if (global_date_range && mythis.changedHtml(global_date_range))
 	{
+	    mythis.gIntervalFixed = false;
 
-	    var gObjs = $('#dateunderlay').				// The header
-			add('DIV.wk-dayname > SPAN.wk-daylink').	// Day & Week view
-			add('TD.st-dtitle > SPAN').			// Month view
-			add('TH.lv-datecell > A.lv-datelink').		// Agenda view
-			get();
+	    mythis.updateToJalali(global_date_range, true);
 
-	    for (i in gObjs) {
-		if (mythis.changedHtml(gObjs[i])) {
-		    mythis.updateToJalali(gObjs[i]);
-		    GM_log ("LOOP: gObjs: " + gObjs[i]);
-		}
-	    }
+	    $('DIV.wk-dayname > SPAN.wk-daylink').	// Day & Week view
+		add('TD.st-dtitle > SPAN').		// Month view
+		//not('TD.st-dtitle-nonmonth > SPAN').	// cells not in current month
+		add('TH.lv-datecell > A.lv-datelink').	// Agenda view
+		each(function() {
+		    GM_log ("LOOP: this: " + this);
+		    if (mythis.changedHtml(this)) {
+			mythis.updateToJalali(this, false);
+		    }
+		    return true;
+		});
 
 	}
 
