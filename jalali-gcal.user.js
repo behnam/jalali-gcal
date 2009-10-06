@@ -39,6 +39,10 @@
 
 /* Changes:
  *
+ * 2009-10-06: Version 3.1.
+ *	* Drop jQuery usage because of GCal conflict with it
+ *	--Behnam Esfahbod "ZWNJ"
+ *
  * 2009-02-07: Version 3.0.
  *	* Fix date interval detection and Month view
  *	--Behnam Esfahbod "ZWNJ"
@@ -479,17 +483,29 @@ var JalaliGCal = function ()
 
 	    mythis.updateToJalali(global_date_range, true);
 
-	    $('DIV.wk-dayname > SPAN.wk-daylink').	// Day & Week view
-		add('TD.st-dtitle > SPAN').		// Month view
-		//not('TD.st-dtitle-nonmonth > SPAN').	// cells not in current month
-		add('TH.lv-datecell > A.lv-datelink').	// Agenda view
-		each(function() {
-		    GM_log ("LOOP: this: " + this);
-		    if (mythis.changedHtml(this)) {
-			mythis.updateToJalali(this, false);
+	    Array.filter(document.getElementsByClassName('wk-dayname'), function(elem){
+		Array.filter(elem.getElementsByClassName('wk-daylink'), function(elem2){
+		    if (mythis.changedHtml(elem2)) {
+			mythis.updateToJalali(elem2, false);
 		    }
-		    return true;
 		});
+	    });
+
+	    Array.filter(document.getElementsByClassName('st-dtitle'), function(elem){
+		Array.filter(elem.getElementsByTagName('SPAN'), function(elem2){
+		    if (mythis.changedHtml(elem2)) {
+			mythis.updateToJalali(elem2, false);
+		    }
+		});
+	    });
+
+	    Array.filter(document.getElementsByClassName('lv-datecell'), function(elem){
+		Array.filter(elem.getElementsByClassName('lv-datelink'), function(elem2){
+		    if (mythis.changedHtml(elem2)) {
+			mythis.updateToJalali(elem2, false);
+		    }
+		});
+	    });
 
 	}
 
@@ -702,47 +718,15 @@ var JalaliCalendar = function ()
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// jQuery JavaScript Library //////////////////////////////////////////////////
+// Start Here /////////////////////////////////////////////////////////////////
 
-// @name          jQuery
-// @namespace     http://www.joanpiedra.com/jquery/greasemonkey
-// @description	  Play nicely with jQuery and Greasemonkey
-// @author        Joan Piedra
-// @homepage      http://www.joanpiedra.com/jquery/greasemonkey
-
-/*
- * MIT License
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so.
- *
- */
-
-// Add jQuery
-var GM_JQ = document.createElement('script');
-GM_JQ.type = 'text/javascript';
-
-//GM_JQ.src = 'http://jquery.com/src/jquery-latest.js';
-GM_JQ.src = 'http://code.jquery.com/jquery-latest.min.js';
-
-document.getElementsByTagName('head')[0].appendChild(GM_JQ);
-
-// Check if jQuery's loaded
-function GM_JQ_wait() {
-    if(typeof unsafeWindow.jQuery == 'undefined') { window.setTimeout(GM_JQ_wait,100); }
-    else { $ = unsafeWindow.jQuery; letsJQuery(); }
-}
-GM_JQ_wait();
-
-// All your GM code must be inside this function
-function letsJQuery() {
+var main = function ()
+{
     jgc = new JalaliGCal();
     jgc.loop(jgc);
 }
+
+main();
 
 
 ///////////////////////////////////////////////////////////////////////////////
