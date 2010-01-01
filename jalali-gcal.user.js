@@ -33,11 +33,15 @@
  */
 
 /*
- * Copyright (C) 2006,2007,2008  Behnam Esfahbod "ZWNJ" <behnam@zwnj.org>
+ * Copyright (C) 2006,2007,2008,2009,2010  Behnam Esfahbod "ZWNJ" <behnam@zwnj.org>
  * Copyright (C) 2008  Mehdi Ahmadizadeh <mehdia@buffalo.edu>
  */
 
 /* Changes:
+ *
+ * 2010-01-01: Version 3.2.
+ *	* Update to GCal changes (Fix #3)
+ *	--Behnam Esfahbod "ZWNJ"
  *
  * 2009-10-06: Version 3.1.
  *	* Drop jQuery usage because of GCal conflict with it
@@ -476,7 +480,7 @@ var JalaliGCal = function ()
 
     this.loop = function (mythis) {
 
-	var global_date_range = document.getElementById("dateunderlay");
+	var global_date_range = document.getElementById("currentDate:0");
 	if (global_date_range && mythis.changedHtml(global_date_range))
 	{
 	    mythis.gIntervalFixed = false;
