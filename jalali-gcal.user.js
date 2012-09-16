@@ -5,6 +5,7 @@
 // @include		http://*.google.com/calendar/render*
 // @include		https://*.google.com/calendar/render*
 // @version		{VERSION}
+// @grant		none
 // ==/UserScript==
 
 /*
@@ -88,13 +89,25 @@
  *
  */
 
-var JalaliGCal = function ()
-{
+"use strict";
+
+var JalaliGCal = function () {
+    var _log_info = function () {
+	    try {
+		//console.info.apply(this, arguments);
+	    } catch (err) {}
+	},
+	_log_error = function () {
+	    try {
+		//console.error.apply(this, arguments);
+	    } catch (err) {}
+	};
+
     this.EDITION	= '{EDITION}';
     this.VERSION	= '{VERSION}';
 
     // Preferences
-    if (this.EDITION == 'Persian') {
+    if (this.EDITION === 'Persian') {
 	this.usePersianDigits	= true;
 	this.usePersianNames	= true;
     }
@@ -106,20 +119,19 @@ var JalaliGCal = function ()
     this.useMonthNameInFirstDay	= true;
 
     if (this.usePersianDigits) {
-	this.tagOpen		= '<span style="direction: rtl; unicode-bidi: embed; font-family: \'DejaVu Sans\',Tahoma,sans; font-weight: bold; font-size: 120%;">';
+	this.tagOpen		= ' &mdash; <span style="direction: rtl; unicode-bidi: embed; font-family: \'Nazli\', \'Nazanin\', \'B Nazanin\', \'Zar\', \'B Zar\', \'DejaVu Sans\',Tahoma,sans; font-weight: bold; font-size: 120%;">';
 	this.tagClose		= '</span>';
     }
 
     else {
-	this.tagOpen		= '<i>';
+	this.tagOpen		= ' &mdash; <i>';
 	this.tagClose		= '</i>';
     }
 
-    this.splitter	= ' &mdash; ';
     this.dash		= ' &ndash; ';
 
 
-    this.loopTimeout	= 500;
+    this.loopTimeout	= 200;
 
 
     // Init values
@@ -129,70 +141,70 @@ var JalaliGCal = function ()
     this.gIntervalFixed	= null;
 
     // Persian number support
-    this.printPerisanDigit		= function (i)	{ return ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"][i]; }
-    this.printPersianNumber		= function (n)	{ var s = ''; for (var i in String(n)) s += this.printPerisanDigit(parseInt(String(n).charAt(i))); return s; }
-    this.pN	= this.printNumber	= function (n)	{ if (this.usePersianDigits) { return this.printPersianNumber(n); } else { return String(n); } }
+    this.printPerisanDigit		= function (i)	{ return ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"][i]; };
+    this.printPersianNumber		= function (n)	{ var s1 = String(n), s2 = '', i; for (i = 0; i < s1.length; i++) { s2 += this.printPerisanDigit(Number(s1.charAt(i))); } return s2; };
+    this.pN	= this.printNumber	= function (n)	{ if (this.usePersianDigits) { return this.printPersianNumber(n); } else { return String(n); } };
 
     // Jalali string outputs
     this.jalaliMonthNameEnglishFull	= ["Farvardin","Ordibehesht","Khordad", "Tir","Mordad","Shahrivar", "Mehr","Aban","Azar", "Dey","Bahman","Esfand"];
-    this.jalaliMonthNameEnglishAbbr	= ["Far","Ord","Kho", "Tir","Mor","Sha", "Meh","Aba","Aza", "Dey","Bah","Esf"];
-    //this.jalaliMonthNameEnglishAbbr	= this.jalaliMonthNameEnglishFull;
+    //this.jalaliMonthNameEnglishAbbr	= ["Far","Ord","Kho", "Tir","Mor","Sha", "Meh","Aba","Aza", "Dey","Bah","Esf"];
+    this.jalaliMonthNameEnglishAbbr	= this.jalaliMonthNameEnglishFull;
 
     this.jalaliMonthNamePersianFull	= ["فروردین","اردی‌بهشت","خرداد", "تیر","مرداد","شهریور", "مهر","آبان","آذر", "دی","بهمن","اسفند"];
     //this.jalaliMonthNamePersianAbbr	= ["فرو.","ارد.","خرد.", "تیر.","مرد.","شهر.", "مهر.","آبا.","آذر.", "دی","بهم.","اسف."];
     this.jalaliMonthNamePersianAbbr	= this.jalaliMonthNamePersianFull;
 
-    this.pJMNF	= this.printJalaliMonthNameFull	= function (i)	{ if (this.usePersianNames) { return this.jalaliMonthNamePersianFull[i-1]; } else { return this.jalaliMonthNameEnglishFull[i-1]; } }
-    this.pJMNA	= this.printJalaliMonthNameAbbr	= function (i)	{ if (this.usePersianNames) { return this.jalaliMonthNamePersianAbbr[i-1]; } else { return this.jalaliMonthNameEnglishAbbr[i-1]; } }
+    this.pJMNF	= this.printJalaliMonthNameFull	= function (i)	{ if (this.usePersianNames) { return this.jalaliMonthNamePersianFull[i-1]; } else { return this.jalaliMonthNameEnglishFull[i-1]; } };
+    this.pJMNA	= this.printJalaliMonthNameAbbr	= function (i)	{ if (this.usePersianNames) { return this.jalaliMonthNamePersianAbbr[i-1]; } else { return this.jalaliMonthNameEnglishAbbr[i-1]; } };
 
     // Day
-    this.printJalaliDay				= function (j1)		{ return this.pN(j1[2])	; }
-    this.printJalaliDayOrMonth			= function (j1)		{ if (j1[2] != 1)
+    this.printJalaliDay				= function (j1)		{ return this.pN(j1[2])	; };
+    this.printJalaliDayOrMonth			= function (j1)		{ if (j1[2] !== 1)
 									    return this.pN(j1[2])	;
 									  else
 									    return this.pN(j1[2]) +	' ' +	this.pJMNA(j1[1])	;
-									}
+									};
 
     // Day & Month
-    this.printJalaliMonumDay			= function (j1)		{ return this.pN(j1[1]) +	'/' +	this.pN(j1[2])	; }
+    this.printJalaliMonumDay			= function (j1)		{ return this.pN(j1[1]) +	'/' +	this.pN(j1[2])	; };
 
     this.printJalaliMonthDay			= function (j1)		{ if (this.usePersianNames)
 									    return this.pN(j1[2]) +	' ' +	this.pJMNA(j1[1])	;
 									  else
 									    return this.pJMNA(j1[1]) +	' ' +	this.pN(j1[2])	;
-									}
+									};
 
     // Month & Year
-    this.printJalaliMonthYear			= function (j1)		{ return this.pJMNF(j1[1]) +	' ' +	this.pN(j1[0])	; }
+    this.printJalaliMonthYear			= function (j1)		{ return this.pJMNF(j1[1]) +	' ' +	this.pN(j1[0])	; };
 
     this.printJalaliMonthDayYear		= function (j1)		{ if (this.usePersianNames)
 									    return this.pN(j1[2]) +	' ' +	this.pJMNA(j1[1]) +	' ' +	this.pN(j1[0])	;
 									  else
 									    return this.pJMNA(j1[1]) +	' ' +	this.pN(j1[2]) +	', ' +	this.pN(j1[0])	;
-									}
+									};
 
     // Month & Year (2)
-    this.printJalaliMonthMonthYear		= function (j1, j2)	{ return this.pJMNF(j1[1]) +	this.dash +	this.pJMNF(j2[1]) +	' ' +	this.pN(j2[0])	; }
-    this.printJalaliMonthYearMonthYear		= function (j1, j2)	{ return this.pJMNF(j1[1]) +	' ' +	this.pN(j1[0]) +	this.dash +	this.pJMNF(j2[1]) +	' ' +	this.pN(j2[0])	; }
+    this.printJalaliMonthMonthYear		= function (j1, j2)	{ return this.pJMNF(j1[1]) +	this.dash +	this.pJMNF(j2[1]) +	' ' +	this.pN(j2[0])	; };
+    this.printJalaliMonthYearMonthYear		= function (j1, j2)	{ return this.pJMNF(j1[1]) +	' ' +	this.pN(j1[0]) +	this.dash +	this.pJMNF(j2[1]) +	' ' +	this.pN(j2[0])	; };
 
     this.printJalaliMonthDayDayYear		= function (j1, j2)	{ if (this.usePersianNames)
 									    return this.pN(j1[2]) +	this.dash +	this.pN(j2[2]) +	' ' +	this.pJMNA(j1[1]) +	' ' +	this.pN(j2[0])	;
 									  else
 									    return this.pJMNA(j1[1]) +	' ' +	this.pN(j1[2]) +	this.dash +	this.pN(j2[2]) +	', ' +	this.pN(j2[0])	;
-									}
+									};
 
     // Day & Month & Year (2)
     this.printJalaliMonthDayMonthDayYear	= function (j1, j2)	{ if (this.usePersianNames)
 									    return this.pN(j1[2]) +	' ' +	this.pJMNA(j1[1]) +	this.dash +	this.pN(j2[2]) +	' ' +	this.pJMNA(j2[1]) +	' ' +	this.pN(j2[0])	;
 									  else
 									    return this.pJMNA(j1[1]) +	' ' +	this.pN(j1[2]) +	this.dash +	this.pJMNA(j2[1]) +	' ' +	this.pN(j2[2]) +	', ' +	this.pN(j2[0])	;
-									}
+									};
 
     this.printJalaliMonthDayYearMonthDayYear	= function (j1, j2)	{ if (this.usePersianNames)
 									    return this.pN(j1[2]) +	' ' +	this.pJMNA(j1[1]) +	' ' +	this.pN(j1[0]) +	this.dash +	this.pN(j2[2]) +	' ' +	this.pJMNA(j2[1]) +	' ' +	this.pN(j2[0])	;
 									  else
 									    return this.pJMNA(j1[1]) +	' ' +	this.pN(j1[2]) +	', ' +	this.pN(j1[0]) +	this.dash +	this.pJMNA(j2[1]) +	' ' +	this.pN(j2[2]) +	', ' +	this.pN(j2[0])	;
-									}
+									};
 
     // Parser
 
@@ -209,7 +221,7 @@ var JalaliGCal = function ()
 	/([A-Z][a-z]{2})\s+(\d{1,2})\s+\W\s+([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/,
 
 	// 3, MONTH DAY1 - DAY2 YEAR
-	/([A-Z][a-z]{2})\s+(\d{1,2})\s+\W\s+(\d{1,2})\s+(\d{4})/,
+	/([A-Z][a-z]{2})\s+(\d{1,2})\s+\W\s+(\d{1,2})\s*,\s+(\d{4})/,
 
 	// 4, MONTH DAY, YEAR
 	/([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/,
@@ -233,12 +245,12 @@ var JalaliGCal = function ()
     ];
 
 
-    this.getGregorianMonthByName	= function (s)	{ return "JanFebMarAprMayJunJulAugSepOctNovDec".indexOf(s.substring(0,3))/3 + 1; }
+    this.getGregorianMonthByName	= function (s)	{ return "JanFebMarAprMayJunJulAugSepOctNovDec".indexOf(s.substring(0,3))/3 + 1; };
 
     this.getDaysFromGregorianString	= function (gs, setGlobal) {
 	var type = 0,
-	    j1 = [1300, 1, 1],
-	    j2 = [1301, 1, 1],
+	    j1 = null,
+	    j2 = null,
 	    withDay = true;
 
 	var g1 = null,
@@ -383,11 +395,11 @@ var JalaliGCal = function ()
 		d1 = Number(res[1]);
 
 	    if (this.gIntervalFixed == false) {
-		GM_log ("PARSER: Fixing Global Interval!");
+		_log_info ("PARSER: Fixing Global Interval!");
 		if (d1 > this.gIntervalStart[2]) {
 		    m1 -= 1;
 		    if (m1 < 1) { m1  = 12; y1 -= 1; }
-		    GM_log ("PARSER: Fixed!");
+		    _log_info ("PARSER: Fixed!");
 		}
 		this.gIntervalFixed = true;
 		setGlobal = true;
@@ -403,16 +415,16 @@ var JalaliGCal = function ()
 	}
 
 	else {
-	    GM_log ("PARSER: ERROR! | gs=" + gs + " | g1, g2: " + g1 + ' - ' + g2);
+	    _log_info ("PARSER: ERROR! | gs=" + gs + " | g1, g2: " + g1 + ' - ' + g2);
 	    return false;
 	}
 
-	GM_log ("PARSER: TYPE: " + type);
-	GM_log ("PARSER: FIXED: " + this.gIntervalFixed);
-	GM_log ("PARSER: S, E: " + this.gIntervalStart + ' - ' + this.gIntervalEnd);
-	GM_log ("PARSER: GS: " + gs);
-	GM_log ("PARSER: g1, g2: " + g1 + ' - ' + g2);
-	GM_log ("PARSER: j1, j2: " + j1 + ' - ' + j2);
+	_log_info ("PARSER: TYPE", type);
+	_log_info ("PARSER: FIXED", this.gIntervalFixed);
+	_log_info ("PARSER: S, E", this.gIntervalStart, this.gIntervalEnd);
+	_log_info ("PARSER: GS", gs);
+	_log_info ("PARSER: g1, g2", g1, g2);
+	_log_info ("PARSER: j1, j2", j1, j2);
 
 	if (setGlobal) {
 	    if (g1 !== null) { this.gIntervalStart	= g1; }
@@ -420,7 +432,7 @@ var JalaliGCal = function ()
 	}
 
 	return [type, j1, j2, withDay];
-    }
+    };
 
 
     // Format
@@ -437,7 +449,7 @@ var JalaliGCal = function ()
 
 	// general
 	if (1 <= type && type <= 5) {
-	    output += gs + this.splitter + this.tagOpen;
+	    output += gs + this.tagOpen;
 	    if (j1[0] == j2[0]) {	if (j1[1] == j2[1]) {	if (j1[2] == j2[2]) {	if (withDay)	output += this.printJalaliMonthDayYear(j1);
 											else		output += this.printJalaliMonthYear(j1);
 							    }
@@ -455,10 +467,10 @@ var JalaliGCal = function ()
 	    output += this.tagClose;
 	}
 
-	else if (type == 6) { output += gs + this.splitter + this.tagOpen + this.printJalaliMonumDay(j1) + this.tagClose; }
-	else if (type == 7) { output += gs + this.splitter + this.tagOpen + this.printJalaliMonthDay(j1) + this.tagClose; }
-	else if (type == 8) { output += gs + this.splitter + this.tagOpen + this.printJalaliMonthDayYear(j1) + this.tagClose; }
-	else if (type == 9) { output += gs + this.splitter + this.tagOpen + this.printJalaliDayOrMonth(j1) + this.tagClose; }
+	else if (type == 6) { output += gs + this.tagOpen + this.printJalaliMonumDay(j1) + this.tagClose; }
+	else if (type == 7) { output += gs + this.tagOpen + this.printJalaliMonthDay(j1) + this.tagClose; }
+	else if (type == 8) { output += gs + this.tagOpen + this.printJalaliMonthDayYear(j1) + this.tagClose; }
+	else if (type == 9) { output += gs + this.tagOpen + this.printJalaliDayOrMonth(j1) + this.tagClose; }
 
 	return output;
     }
@@ -466,21 +478,21 @@ var JalaliGCal = function ()
 
     // Dirty stuff
 
-    this.getHtml = function (obj)		{ return obj.innerHTML; }
-    this.setHtml = function (obj, html)		{ return obj.innerHTML = html; }
-    this.getPrev = function (obj)		{ return obj.getAttribute("prev_innerHTML"); }
-    this.setPrev = function (obj, prev)		{ return obj.setAttribute("prev_innerHTML", prev, true); }
-    this.getOrig = function (obj)		{ return obj.getAttribute("orig_innerHTML"); }
-    this.setOrig = function (obj, orig)		{ return obj.setAttribute("orig_innerHTML", orig, true); }
+    this.getHtml = function (obj)		{ return obj.innerHTML; };
+    this.setHtml = function (obj, html)		{ return obj.innerHTML = html; };
+    this.getPrev = function (obj)		{ return obj.getAttribute("prev_innerHTML"); };
+    this.setPrev = function (obj, prev)		{ return obj.setAttribute("prev_innerHTML", prev, true); };
+    this.getOrig = function (obj)		{ return obj.getAttribute("orig_innerHTML"); };
+    this.setOrig = function (obj, orig)		{ return obj.setAttribute("orig_innerHTML", orig, true); };
 
-    this.changedHtml	= function (obj)	{ return !this.getPrev(obj) || this.getPrev(obj) != this.getHtml(obj); }
-    this.updateHtml	= function (obj, html)	{ this.setOrig (obj, this.getHtml(obj)); this.setHtml (obj, html); this.setPrev (obj, this.getHtml(obj)); }
+    this.changedHtml	= function (obj)	{ return !this.getPrev(obj) || this.getPrev(obj) != this.getHtml(obj); };
+    this.updateHtml	= function (obj, html)	{ this.setOrig (obj, this.getHtml(obj)); this.setHtml (obj, html); this.setPrev (obj, this.getHtml(obj)); };
 
-    this.updateToJalali	= function (obj, setGlobal)	{ this.updateHtml(obj, this.printJalali(this.getDaysFromGregorianString(this.getHtml(obj), setGlobal), this.getHtml(obj))); }
+    this.updateToJalali	= function (obj, setGlobal)	{ this.updateHtml(obj, this.printJalali(this.getDaysFromGregorianString(this.getHtml(obj), setGlobal), this.getHtml(obj))); };
 
     this.loop = function (mythis) {
 
-	var global_date_range = document.getElementById("currentDate:0");
+	var global_date_range = document.getElementById("currentDate:2");
 	if (global_date_range && mythis.changedHtml(global_date_range))
 	{
 	    mythis.gIntervalFixed = false;
@@ -514,8 +526,8 @@ var JalaliGCal = function ()
 	}
 
 	window.setTimeout (mythis.loop, this.loopTimeout, mythis);
-    }
-}
+    };
+};
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -523,7 +535,7 @@ var JalaliGCal = function ()
 
 /*
  * Jalali Calendar in JavaScript
- */ 
+ */
 
 /*
  * GNU LGPL 2.1
@@ -570,7 +582,7 @@ var JalaliCalendar = function ()
     this.gDaysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     this.jDaysInMonth = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29];
 
-    this.div = function (a,b) { return Math.floor(a/b); }
+    this.div = function (a,b) { return Math.floor(a/b); };
 
     this.getGregorianDaysInMonth = function (y, m)
     {
@@ -694,8 +706,7 @@ var JalaliCalendar = function ()
 	gy += 4*this.div(g_day_no,1461);		// 1461 = 365*4 + 4/4
 	g_day_no %= 1461;
 
-	if (g_day_no >= 366)
-	{
+	if (g_day_no >= 366) {
 	    leap = 0;
 
 	    g_day_no--;
@@ -726,7 +737,7 @@ var JalaliCalendar = function ()
 
 var main = function ()
 {
-    jgc = new JalaliGCal();
+    var jgc = new JalaliGCal();
     jgc.loop(jgc);
 }
 
