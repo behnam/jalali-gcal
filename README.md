@@ -4,7 +4,10 @@ Jalali-GCal
 *Jalali/Persian Calendar browser extension (user-script) for Google Calendar
 web interface*
 
-**Version 4.0 works with latest Google Calendar UI as of Sept 2012.**
+**Version 4.0, Sept 2012**
+
+http://behnam.github.com/jalali-gcal/
+
 
 How to Install in Mozilla Firefox
 ---------------------------------
@@ -12,25 +15,28 @@ How to Install in Mozilla Firefox
 1. Install GreaseMonkey extension from
 https://addons.mozilla.org/en-US/firefox/addon/748
 2. Open one of the following links and click on the *Install* button.
-  * English edition http://userscripts.org/scripts/show/7793
-  * Persian edition http://userscripts.org/scripts/show/41935
+  * (English edition)[https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.0.english.user.js]
+  * (Persian edition)[https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.0.persian.user.js]
 3. Open a Google Calendar page or refresh your current page.
+
 
 How to Install in Google Chrome
 -------------------------------
 
 1. Open one of the following links and click on the *Install* button
 to download a `*.user.js` file.
-  * English edition http://userscripts.org/scripts/show/7793
-  * Persian edition http://userscripts.org/scripts/show/41935
+  * (English edition)[https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.0.english.user.js]
+  * (Persian edition)[https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.0.persian.user.js]
 2. Open the Chrome Extensions page (at Menu > Tools > Extensions)
 3. Drag and drop the `.user.js` file in the Extensions page.
 4. Open a Google Calendar page or refresh your current page.
+
 
 Links
 -----
 * Project homepage: https://github.com/behnam/jalali-gcal
 * Other resources on Persian Computing: http://persian-computing.org/
+
 
 Copyright License
 -----------------
