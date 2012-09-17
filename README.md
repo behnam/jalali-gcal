@@ -14,21 +14,21 @@ How to Install in Mozilla Firefox
 
 1. Install GreaseMonkey extension from
 https://addons.mozilla.org/en-US/firefox/addon/748
-2. Open one of the following links and click on the *Install* button.
-  * (English edition)[https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.0.english.user.js]
-  * (Persian edition)[https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.0.persian.user.js]
+2. Click on one of the following links to install the user-script:
+  * [English edition](https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.0.english.user.js)
+  * [Persian edition](https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.0.persian.user.js)
 3. Open a Google Calendar page or refresh your current page.
 
 
 How to Install in Google Chrome
 -------------------------------
 
-1. Open one of the following links and click on the *Install* button
-to download a `*.user.js` file.
-  * (English edition)[https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.0.english.user.js]
-  * (Persian edition)[https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.0.persian.user.js]
+1. Click on one of the following links to download a `.user.js` file.
+  * [English edition](https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.0.english.user.js)
+  * [Persian edition](https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.0.persian.user.js)
 2. Open the Chrome Extensions page (at Menu > Tools > Extensions)
-3. Drag and drop the `.user.js` file in the Extensions page.
+3. Drag and drop the downloaded `jalali-gcal-*.user.js` file into the
+Extensions page.
 4. Open a Google Calendar page or refresh your current page.
 
 
