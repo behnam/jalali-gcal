@@ -4,6 +4,8 @@ Jalali-GCal
 *Jalali/Persian Calendar browser extension (user-script) for Google Calendar
 web interface*
 
+Adds Jalali/Persian dates beside the Gregorian ones in the main views. 
+
 **Version 4.0, Sept 2012**
 
 http://behnam.github.com/jalali-gcal/
