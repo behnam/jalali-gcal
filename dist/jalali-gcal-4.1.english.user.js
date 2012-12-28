@@ -4,7 +4,9 @@
 // @description		Adds Jalali calendar to Google Calendar web interface
 // @include		http://*.google.com/calendar/render*
 // @include		https://*.google.com/calendar/render*
-// @version		4.0
+// @include		http://*.google.com/calendar/*/render*
+// @include		https://*.google.com/calendar/*/render*
+// @version		4.1
 // @grant		none
 // ==/UserScript==
 
@@ -107,7 +109,7 @@ var JalaliGCal = function () {
 	};
 
     this.EDITION	= 'English';
-    this.VERSION	= '4.0';
+    this.VERSION	= '4.1';
 
     // Preferences
     if (this.EDITION === 'Persian') {

@@ -4,11 +4,11 @@ Jalali-GCal
 *Jalali/Persian Calendar browser extension (user-script) for Google Calendar
 web interface*
 
-Adds Jalali/Persian dates beside the Gregorian ones in the main views. 
+Adds Jalali/Persian dates beside the Gregorian ones in the main views.
 
-**Version 4.0, Sept 2012**
+**Version 4.1, December 2012**
 
-http://behnam.github.com/jalali-gcal/
+http://code.behnam.com/jalali-gcal/
 
 
 How to Install in Mozilla Firefox
@@ -17,8 +17,8 @@ How to Install in Mozilla Firefox
 1. Install GreaseMonkey extension from
 https://addons.mozilla.org/en-US/firefox/addon/748
 2. Click on one of the following links to install the user-script:
-  * [English edition](https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.0.english.user.js)
-  * [Persian edition](https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.0.persian.user.js)
+  * [English edition](https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.1.english.user.js)
+  * [Persian edition](https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.1.persian.user.js)
 3. Open a Google Calendar page or refresh your current page.
 
 
@@ -26,8 +26,8 @@ How to Install in Google Chrome
 -------------------------------
 
 1. Click on one of the following links to download a `.user.js` file.
-  * [English edition](https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.0.english.user.js)
-  * [Persian edition](https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.0.persian.user.js)
+  * [English edition](https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.1.english.user.js)
+  * [Persian edition](https://github.com/behnam/jalali-gcal/raw/master/dist/jalali-gcal-4.1.persian.user.js)
 2. Open the Chrome Extensions page (at Menu > Tools > Extensions)
 3. Drag and drop the downloaded `jalali-gcal-*.user.js` file into the
 Extensions page.

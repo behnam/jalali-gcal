@@ -4,6 +4,8 @@
 // @description		Adds Jalali calendar to Google Calendar web interface
 // @include		http://*.google.com/calendar/render*
 // @include		https://*.google.com/calendar/render*
+// @include		http://*.google.com/calendar/*/render*
+// @include		https://*.google.com/calendar/*/render*
 // @version		{VERSION}
 // @grant		none
 // ==/UserScript==
