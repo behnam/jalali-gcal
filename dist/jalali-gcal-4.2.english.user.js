@@ -6,7 +6,7 @@
 // @include		https://*.google.com/calendar/render*
 // @include		http://*.google.com/calendar/*/render*
 // @include		https://*.google.com/calendar/*/render*
-// @version		{VERSION}
+// @version		4.2
 // @grant		none
 // ==/UserScript==
 
@@ -108,8 +108,8 @@ var JalaliGCal = function () {
 	    return Array.prototype.filter.call(Array.prototype.slice.call(nodelist), func);
 	};
 
-    this.EDITION	= '{EDITION}';
-    this.VERSION	= '{VERSION}';
+    this.EDITION	= 'English';
+    this.VERSION	= '4.2';
 
     // Preferences
     if (this.EDITION === 'Persian') {
