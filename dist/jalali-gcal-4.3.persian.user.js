@@ -1,17 +1,17 @@
 // ==UserScript==
 // @name		Jalali GCal
-// @namespace		http://code.google.com/p/jalali-gcal
+// @namespace		http://code.behnam.es/jalali-gcal/
 // @description		Adds Jalali calendar to Google Calendar web interface
 // @include		http://*.google.com/calendar/render*
 // @include		https://*.google.com/calendar/render*
 // @include		http://*.google.com/calendar/*/render*
 // @include		https://*.google.com/calendar/*/render*
-// @version		4.2
+// @version		4.3
 // @grant		none
 // ==/UserScript==
 
 /*
- * Project page: http://code.google.com/p/jalali-gcal/
+ * Project page: http://code.behnam.es/jalali-gcal/
  */
 
 
@@ -36,60 +36,10 @@
  */
 
 /*
- * Copyright (C) 2006,2007,2008,2009,2010  Behnam Esfahbod "ZWNJ" <behnam@zwnj.org>
+ * Copyright (C) 2006-2010,2012-2013  Behnam Esfahbod "ZWNJ" <behnam@zwnj.org>
  * Copyright (C) 2008  Mehdi Ahmadizadeh <mehdia@buffalo.edu>
  */
 
-/* Changes:
- *
- * 2010-01-01: Version 3.2.
- *	* Update to GCal changes (Fix #3)
- *	--Behnam Esfahbod "ZWNJ"
- *
- * 2009-10-06: Version 3.1.
- *	* Drop jQuery usage because of GCal conflict with it
- *	--Behnam Esfahbod "ZWNJ"
- *
- * 2009-02-07: Version 3.0.
- *	* Fix date interval detection and Month view
- *	--Behnam Esfahbod "ZWNJ"
- *
- * 2009-02-07: Version 2.6.
- *	* Update to new GCal changes
- *	* Use jQeury
- *	--Behnam Esfahbod "ZWNJ"
- *
- * 2009-02-06: Version 2.5.
- *	* Use U+2013 EN DASH for range of dates
- *	* Use '\W' to accept all range seperators (in type detection regexp)
- *	  (thanks to http://code.google.com/u/bakhshian/)
- *	--Behnam Esfahbod "ZWNJ"
- *
- * 2008-09-19: Version 2.4.
- *	* Support writing month name on the first day of each month in the
- *	calendar table
- *	--Behnam Esfahbod "ZWNJ"
- *
- * 2008-09-19: Version 2.3.
- *	* Some more fixes.
- *	--Behnam Esfahbod "ZWNJ"
- *
- * 2008-09-19: Version 2.2.
- *	* Support English and Persian numbers and months names.
- *	--Behnam Esfahbod "ZWNJ"
- *
- * 2008-08-29: Version 2.0.
- *	* Make compatible with new Google Calendar UI.
- *	--Mehdi Ahmadizadeh
- *
- * 2007-01-03: Version 1.2.
- *	* Fix a date format.
- *	--Behnam Esfahbod "ZWNJ"
- *
- * 2006-06-01: Version 1.1.
- *	--Behnam Esfahbod "ZWNJ"
- *
- */
 
 "use strict";
 
@@ -109,7 +59,7 @@ var JalaliGCal = function () {
 	};
 
     this.EDITION	= 'Persian';
-    this.VERSION	= '4.2';
+    this.VERSION	= '4.3';
 
     // Preferences
     if (this.EDITION === 'Persian') {
@@ -762,4 +712,3 @@ main();
 ///////////////////////////////////////////////////////////////////////////////
 // The END ////////////////////////////////////////////////////////////////////
 
-/* vim:set sw=4: */
