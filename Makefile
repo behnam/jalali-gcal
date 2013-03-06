@@ -1,5 +1,5 @@
 
-VERSION=4.2
+VERSION=4.3
 
 all: editions
 #all: dev
